@@ -133,7 +133,14 @@ app.get('/get-user-info', function(request, response){
 });
 
 app.get('/get-user-licenses', function(request, response){
-
+    connection.query('SELECT * FROM clientlicenses WHERE userID = ?',
+    [request.session.userInfo.user_id],
+    function(error, result, fields){
+        if(error) throw error;
+        if (result.length>0){
+            response.json(result);
+        }
+    });
 });
 
 app.get('/get-software-users', function(request, response){
@@ -192,7 +199,7 @@ app.post('/client-auth-form', function(request, response){  //Client login proce
                 response.redirect('/html/client-portal/ClientPage.html');
             }
             else {
-                response.send("Incorrect Credentials. Please try again");
+                response.send("Incorrect email and/or password. Please try again.");
             }
             response.end;
         });
