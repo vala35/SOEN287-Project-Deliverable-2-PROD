@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Renew License | Client Portal | OneLicense Software Management </title>
+    <link rel="stylesheet" href="/client_styles.css">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="/Functions.js"></script>
+
+</head>
+<body>
+    <div class="header" id="header">
+		<i class="material-icons MenuButton" style="color:white;" onclick="toggleSidebar();">menu</i>
+	</div>
+
+<div class="main">
+    <div class="menu" id="sidebar">
+        <a id="logo" href="../index.html">
+            <div class="logobox"></div></a>
+        <a href="ClientPage.html">Dashboard</a>
+        <a href="AccountSettings.html">Account Settings</a>
+        <a href="AddLicense.html">Add License</a>
+        <a href="RenewLicense.html">Renew License</a>
+        <a href="EndLicense.html">End License</a>
+        <a href="../index.html">Log Out</a>
+    </div>
+    <div class="background-container">
+        <div class="background-image"></div>
+        <div class="body1">
+        <h1><br>Renew a License<br></h1>
+        <br>
+        <form action=ClientPage.html>
+            <div>
+                <label for="LicenseChoice">Choose a License to renew:</label>
+                <select name="LicenseChoice" id="LicenseChoice">
+                    <option value="Licence1">Licence1</option>
+                    <option value="Licence2">Licence2</option>
+                    <option value="Licence3">Licence3</option>
+                </select>
+            </div>
+            <div>
+                <label for="renewalTime">Renew for:</label>
+                <select name="renewalTime" id="renewalTime">
+                    <option value="1 year">1 year</option>
+                    <option value="2 years">2 years</option>
+                    <option value="3 years">3 years</option>
+                    <option value="4 years">4 years</option>
+                    <option value="5 years">5 years</option>
+                </select>
+            </div><br>
+            <input type="button" id="button" value="Renew">
+        </form>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    // RenewLicense.html
+    document.addEventListener('DOMContentLoaded', function () {
+        var licenses = JSON.parse(localStorage.getItem('licenses'));
+        var select = document.getElementById('LicenseChoice');
+
+        // Checking if there are licenses stored in the local storage
+        if (licenses) {
+            licenses.forEach(function (license, index) {
+                var option = document.createElement('option');
+                option.value = index;
+                option.text = license.Software;
+                select.appendChild(option);
+            });
+        }
+
+        document.getElementById('button').addEventListener('click', renewLicense);
+    });
+</script>
+</html>

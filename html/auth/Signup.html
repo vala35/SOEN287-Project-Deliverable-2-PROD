@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up | OneLicense Software Management </title>
+    <link rel="stylesheet" href="/auth_style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+
+<body>
+    <header>
+        <a href="../index.html">   
+        <div class="logobox"></div></a>
+    </header>
+    <h1>Sign up for an account</h1>
+    <main>
+        <div class ="Signup">
+            <h3>Enter your information below</h3>
+
+            <form id="signup-form" action="/signup-form" method="post" onsubmit="return validateForm()">
+                <label for="FName">First Name*</label><br>
+                <input type="text" id="FName" name="firstname" required><br>
+                <label for="LName">Last Name*</label><br>
+                <input type="text" id="LName" name="lastname" required><br>
+                <label for="AcctType">I am a...*</label><br>
+                <div class="radioButtons">
+                    <input type="radio" id="client" name="userType" value="Client" required>
+                    <label for="AcctType">Client</label>
+                    <input type="radio" id="provider" name="userType" value="Provider" required>
+                    <label for="AcctType">Provider</label>
+                </div>
+                <label for="email"> Email Address*</label><br>
+                <input type="email" name="email" id="email" required><br>
+                <label for="PW">Password*</label><br>
+                <input type="password" name="password" id="password" required><br>
+                <label for="PW">Confirm Password*</label><br>
+                <input type="password" name="confirmpassword" id="confirmpassword" required><br><br>
+                <input type="submit" value="Sign up">
+            </form>
+        </div>
+
+        <script>
+            function validateForm(){
+                let email = document.getElementById("email").value;
+                let password = document.getElementById("password").value;
+                let confirm = document.getElementById('confirmpassword').value;
+                let firstName = document.getElementById('FName').value;
+                let lastName = document.getElementById('LName').value;
+
+                let pwMatch = password == confirm;
+                let pwPolicy = password.length >= 8;
+                let filled = email && password && confirm && firstName && lastName;
+
+                if (pwMatch && pwPolicy && filled){
+                    console.log("yes");
+                    alert("Your account has been created. Please sign in.");
+                   // document.getElementById('signup-form').submit();
+                   return true;
+                }
+                else{
+                    console.log('no');
+                    alert("Form is invalid. Please make sure everything is filled, passwords match and are at least 8 characters.");
+                    return false;
+                }
+
+            }
+        </script>
+
+        <!--  -->
+        <div class = "login-prompt">
+            <h3>Already a member? <a href="LogIn.html">Sign in now</a></h3>
+            <h3></h3>
+        </div>
+    </main>
+
+    <footer>
+        <h5>© Copyright 2023 by the SOEN287 Project Team. <br> All rights reserved.</h5>
+    </footer>
+
+</body>
+
+</html>
