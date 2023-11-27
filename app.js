@@ -78,7 +78,7 @@ app.get('/html/index.html', function(request, response) {
 
 
 
-//Authentication paths - No login required
+//Authentication paths - No login required - Paul is getting rid of these
 app.get('/auth/LogIn.html', function(request, response) {
 	response.sendFile(path.join(__dirname + '/html/auth/LogIn.html'));
 });
@@ -92,7 +92,7 @@ app.get('/auth/ForgotPassword.html', function(request, response) {
 	response.sendFile(path.join(__dirname + '/html/auth/ForgotPassword.html'));
 });
 //
-//Client Portal - Auth Required
+//Client Portal - Auth Required - - Paul is getting rid of these
 app.get('/html/client-portal/ClientPage.html', requireAuthClient,function(request, response) {
         response.sendFile(path.join(__dirname + '/html/client-portal/ClientPage.html'));
 });
@@ -109,7 +109,7 @@ app.get('/html/client-portal/RenewLicense.html',requireAuthClient, function(requ
     response.sendFile(path.join(__dirname + '/html/client-portal/RenewLicense.html'));
 });
 //
-//Provider Portal - Auth Required
+//Provider Portal - Auth Required - - Paul is getting rid of these
 app.get('/html/provider-portal/provider-dashboard.html', requireAuthProvider,function(request, response) {
     response.sendFile(path.join(__dirname + '/html/provider-portal/provider-dashboard.html'));
 });
@@ -186,7 +186,7 @@ app.post('/update-account-settings', function(request, response){
                 }
             }
             else {
-                response.send("Failed to update account settings. Please try again later.")
+                // response.send("Failed to update account settings. Please try again later.")
             }
             response.end;
         });
@@ -209,10 +209,12 @@ app.post('/client-auth-form', function(request, response){  //Client login proce
                 request.session.userId = email_address; 
                 request.session.userInfo = result[0];
                 // userInfo = result[0];
-                response.redirect('/html/client-portal/ClientPage.html');
-            }
+                response.redirect('/html/client-portal/ClientPage.html');            }
             else {
-                response.send("Incorrect email and/or password. Please try again.");
+                let errorPage=("<link rel='stylesheet' href='/auth_style.css'>"+
+                "<h1>Incorrect email and/or password.</h1>"+
+                "<main><a href='/auth/LogIn.html'><h2>Please try again.</h2></a></main> ");
+                response.send(errorPage);
             }
             response.end;
         });
@@ -238,7 +240,10 @@ app.post('/provider-auth-form', function(request, response){  //Provider login p
                 response.redirect('/html/provider-portal/provider-dashboard.html');
             }
             else {
-                response.send("Incorrect Credentials. Please try again");
+                let errorPage=("<link rel='stylesheet' href='/auth_style.css'>"+
+                "<h1>Incorrect email and/or password.</h1>"+
+                "<main><a href='/auth/Provider-Login.html'><h2>Please try again.</h2></a></main> ");
+                response.send(errorPage);
             }
             response.end;
         });
