@@ -30,7 +30,7 @@
         <div class="body1">
         <h1><br>Renew a License<br></h1>
         <br>
-        <form action=/renew-license method="post">
+        <form action=/renew-license method="post" onsubmit="return confirmRenew()">
             <div>
                 <label for="LicenseChoice">Choose a License to renew:</label>
                 <select name="LicenseChoice" id="LicenseChoice">
@@ -67,6 +67,11 @@
             });
         }
         })
+
+        function confirmRenew(){
+            let message = "Are you sure you want to renew this license?";
+            return confirm(message);
+        }
 
 </script>
 </html>

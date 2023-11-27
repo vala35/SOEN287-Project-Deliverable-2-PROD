@@ -30,7 +30,7 @@
         <div class="body1">
         <h1><br>End A License<br></h1>
         <br>
-        <form id="endLicence" action="/end-license" method="post">
+        <form id="endLicence" action="/end-license" method="post" onsubmit="return confirmEnd()">
             <div>
                 <label for="LicenseChoice">Choose a License to end:<br></label>
                 <select name="LicenseChoice" id="LicenseChoice">
@@ -57,6 +57,11 @@
             });
         }
         })
+
+        function confirmEnd(){
+            let message = "Are you sure you want end your subscription?";
+            return confirm(message);
+        }
 
 </script>
 </body>
