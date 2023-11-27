@@ -30,44 +30,57 @@
         <div class="body1">
         <h1><br>End A License<br></h1>
         <br>
-        <form id="endLicence">
+        <form id="endLicence" action="/end-license" method="post">
             <div>
                 <label for="LicenseChoice">Choose a License to end:<br></label>
-                <select name="renewalTime" id="renewalTime">
-                    <option value="Licence1">Licence1</option>
-                    <option value="Licence2">Licence2</option>
-                    <option value="Licence3">Licence3</option>
+                <select name="LicenseChoice" id="LicenseChoice">
                 </select>
             </div>
-        </form><br>
-            <button id="button" type="button">End</button>
+            <br>
+            <input type="submit" id="button" type="button" value="End">
+        </form>
         </div>
     </div>
 </div>
 <script>
-    // EndLicense.html
-    document.addEventListener('DOMContentLoaded', function () {
-        var licenses = JSON.parse(localStorage.getItem('licenses'));
-        var form = document.querySelector('form');
-
-        // Checking if there are licenses stored in the local storage
+        fetch('/get-user-licenses')
+        .then(response => response.json())
+        .then(result => {
+        let licenses = result;
+        let select = document.getElementById('LicenseChoice');
         if (licenses) {
             licenses.forEach(function (license, index) {
-                var radio = document.createElement('input');
-                radio.type = 'radio';
-                radio.name = 'LicenseChoice';
-                radio.value = index;
-
-                var label = document.createElement('label');
-                label.textContent = license.Software;
-
-                form.appendChild(radio);
-                form.appendChild(label);
-                form.appendChild(document.createElement('br'));
+                var option = document.createElement('option');
+                option.value = license.license_key;
+                option.text = license.softwareName;
+                select.appendChild(option);
             });
         }
-        document.getElementById('button').addEventListener('click',removeLicense);
-    });
+        })
+
+    // // EndLicense.html
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     var licenses = JSON.parse(localStorage.getItem('licenses'));
+    //     var form = document.querySelector('form');
+
+    //     // Checking if there are licenses stored in the local storage
+    //     if (licenses) {
+    //         licenses.forEach(function (license, index) {
+    //             var radio = document.createElement('input');
+    //             radio.type = 'radio';
+    //             radio.name = 'LicenseChoice';
+    //             radio.value = index;
+
+    //             var label = document.createElement('label');
+    //             label.textContent = license.Software;
+
+    //             form.appendChild(radio);
+    //             form.appendChild(label);
+    //             form.appendChild(document.createElement('br'));
+    //         });
+    //     }
+    //     document.getElementById('button').addEventListener('click',removeLicense);
+    // });
 </script>
 </body>
 </html>

@@ -143,6 +143,21 @@ app.get('/get-user-licenses', function(request, response){
     });
 });
 
+app.post('/renew-license', function(request, response){
+    let renewalTerm = request.body.renewalTime.substring(0,1);
+    let licenseKey = request.body.LicenseChoice;
+    connection.query('UPDATE licensekeys SET expiryDate = DATE_ADD(expiryDate, INTERVAL ? YEAR) WHERE license_key = ?',
+    [renewalTerm, licenseKey]);
+    response.redirect("/html/client-portal/ClientPage.html");
+});
+
+app.post('/end-license', function(request, response){
+    let licenseKey = request.body.LicenseChoice;
+    connection.query('UPDATE licensekeys SET status = "inactive" WHERE license_key = ?',
+    [licenseKey]);
+    response.redirect("/html/client-portal/ClientPage.html");
+});
+
 app.get('/get-software-users', function(request, response){
 
 });
@@ -177,8 +192,6 @@ app.post('/update-account-settings', function(request, response){
         });
     }
 });
-
-
 
 app.post('/client-auth-form', function(request, response){  //Client login process
     let email_address = request.body.email;
