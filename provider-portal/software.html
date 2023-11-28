@@ -1,0 +1,608 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Software | Provider Portal | OneLicense Software Management </title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="provider-style.css">
+
+    <style>
+        table.SoftwareListTable {
+            border-collapse: collapse;
+        }
+
+            table.SoftwareListTable th {
+                text-align: right;
+            }
+
+            table.SoftwareListTable td {
+                text-align: right;
+            }
+
+            table.SoftwareListTable tr {
+                height: 2em;
+                background-color: white;
+            }
+
+                table.SoftwareListTable tr:nth-child(even) {
+                    background-color: #e0e0e0;
+                }
+
+                table.SoftwareListTable tr.SoftwareItem {
+                    cursor: pointer;
+                }
+
+                    table.SoftwareListTable tr.SoftwareItem:hover {
+                        background-color: gray;
+                    }
+
+            table.SoftwareListTable tbody {
+                padding: 0;
+            }
+
+        div.TableContainer {
+            background-color: white;
+            height: 400px;
+            overflow-y: scroll;
+        }
+
+        table.serialNumTable {
+            width: 100%;
+            background-color: white;
+            border-collapse: collapse;
+        }
+
+            table.serialNumTable tr.serialItem {
+                height: 2em;
+                cursor: pointer;
+            }
+
+                table.serialNumTable tr.serialItem:nth-child(even) {
+                    background-color: #e0e0e0;
+                }
+
+                table.serialNumTable tr.serialItem:hover {
+                    background-color: gray;
+                }
+
+        #AppSettingsPage {
+            display: none;
+        }
+
+
+        #appUserList {
+            display: none;
+        }
+
+        #appSerialNumberList {
+            display: none;
+            overflow-y: auto;
+        }
+
+        #generalBtn {
+            font-weight: bold;
+        }
+
+        div.InnerTabContent {
+            width: calc(100% - 2em);
+            padding: 1em;
+            background-color: #f0f0f0
+        }
+
+        h4, label {
+            font-family: Verdana, sans-serif;
+            user-select: none;
+        }
+
+        img.softwareIcon {
+            width: 150px;
+            height: 150px;
+        }
+
+        .AppTitle {
+            margin: 0;
+            padding: 0;
+        }
+
+        .NewAppTitle {
+            font-size: 24px;
+            font-weight: bold;
+            width: 150px;
+            border: none;
+        }
+
+        i.done {
+            color: green;
+            cursor: pointer;
+        }
+
+        i.cancel {
+            color: red;
+            cursor: pointer;
+        }
+
+        div.MainContentHeader {
+            display: inline-flex;
+            align-items: center;
+        }
+
+        div.ControlPanelBody {
+            width: 80%;
+            min-height: calc(100% - 4em);
+            background-color: #fff;
+            text-align: left;
+            padding: 1em;
+        }
+
+        li.TabItem {
+            display: inline-block;
+            margin-right: 1em;
+            font-family: Verdana, sans-serif;
+            cursor: pointer;
+            user-select: none;
+        }
+
+       
+        #serialNumTable {
+            display: block;
+        }
+
+        #serialNumberSettings {
+            display: none;
+        }
+
+        input.SearchTextbox {
+            width: calc(100% - 0.5em);
+            height: 24px;
+            margin-bottom: 8px;
+        }
+
+        table.UserTable {
+            background-color: white;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+            table.UserTable tr.UserItem {
+                height: 2em;
+                cursor: pointer;
+            }
+
+                table.UserTable tr.UserItem:nth-child(even) {
+                    background-color: #e0e0e0;
+                }
+
+                table.UserTable tr.UserItem:hover {
+                    background-color: gray;
+                }
+
+
+        #UserTableContainer {
+            display: block;
+        }
+
+        #UserSettinsContainer {
+            display: none;
+        }
+
+        div.CommInnerContainer {
+            width: 100%;
+            background-color: white;
+        }
+
+        input.emailSubject {
+            width: 100%;
+            height: 2em;
+        }
+
+        #appCommTab {
+            display: none;
+        }
+    </style>
+
+    <script type="text/javascript" src="script.js"></script>
+
+
+    <script>
+
+        var currentTabId = "generalSettings";
+        var currBtnId = "generalBtn";
+        function switchTab(tabId, btnId) {
+            document.getElementById(currBtnId).style.fontWeight = "normal";
+            document.getElementById(btnId).style.fontWeight = "bold";
+            currBtnId = btnId;
+
+            document.getElementById(currentTabId).style.display = "none";
+            document.getElementById(tabId).style.display = "block";
+            currentTabId = tabId;
+        }
+
+        function appSelector_SelectApp() {
+            document.getElementById("SoftwareListPage").style.display = "None";
+            document.getElementById("AppSettingsPage").style.display = "block";
+        }
+
+        function appSelector_GoBack() {
+            document.getElementById("SoftwareListPage").style.display = "block";
+            document.getElementById("AppSettingsPage").style.display = "None";
+        }
+
+        function serialItem_Edit() {
+            document.getElementById("serialNumTable").style.display = "none";
+            document.getElementById("serialNumberSettings").style.display = "block";
+        }
+        function serialItem_GoBack() {
+            document.getElementById("serialNumberSettings").style.display = "None";
+            document.getElementById("serialNumTable").style.display = "block";
+        }
+
+        function userItem_Edit() {
+            document.getElementById("UserTableContainer").style.display = "none";
+            document.getElementById("UserSettinsContainer").style.display = "block";
+        }
+
+        function userItem_GoBack() {
+            document.getElementById("UserSettinsContainer").style.display = "None";
+            document.getElementById("UserTableContainer").style.display = "block";
+        }
+
+
+        window.onload = function () {
+            var elements = document.getElementsByClassName("serialItem");
+
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].addEventListener("click", serialItem_Edit);
+            }
+
+            elements = document.getElementsByClassName("UserItem");
+
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].addEventListener("click", userItem_Edit);
+            }
+        };
+
+
+    </script>
+
+</head>
+<body>
+
+    <!--Header section-->
+    <div class="header" id="header">
+        <i class="material-icons MenuButton" style="color:white;" onclick="toggleSidebar();">menu</i>
+
+        <!--<img alt="usericon"style="float:right" />-->
+    </div>
+
+
+    <!--Sidebar-->
+    <div class="sidebar" id="sidebar">
+        <!--<img alt="logo" />-->
+
+        <div class="LogoContainer">
+            <a href="../index.html"> <span class="dot"></span>  </a>
+        </div>
+
+
+        <ul style="list-style: none; padding: 0;">
+            <li class="SidebarItem" onclick="window.location.href = 'provider-dashboard.html';">Dashboard</li>
+            <li class="SidebarItem" onclick="window.location.href = 'software.html';">Software</li>
+            <li class="SidebarItem" onclick="window.location.href = 'users.html';">Users</li>
+            <li class="SidebarItem" onclick="window.location.href = 'account-settings.html';">Account Settings</li>
+            <li class="SidebarItem" onclick="window.location.href = '../index.html';">Log Out</li>
+
+        </ul>
+
+    </div>
+
+
+    <!--Page content-->
+    <div id="SoftwareListPage" class="MainContent">
+
+        <h2>Software List</h2>
+
+        <table id="SoftwareList" class="SoftwareListTable">
+
+            <colgroup>
+                <col style="width: 25px" />
+                <col style="width: 200px" />
+                <col style="width: 200px" />
+            </colgroup>
+
+            <thead>
+
+                <tr>
+                    <th>Logo</th>
+                    <th>Produce Name</th>
+                    <th>Current Version</th>
+
+                </tr>
+
+            </thead>
+            <tbody>
+                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
+                    <td><img width="25" src="../img/microsoft_word.png" /></td>
+                    <td>Alure</td>
+                    <td>1.1.6</td>
+                </tr>
+                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
+                    <td><img width="25" src="../img/microsoft_word.png" /></td>
+
+                    <td>Cronos</td>
+                    <td>1.1.6</td>
+                </tr>
+                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
+                    <td><img width="25" src="../img/microsoft_word.png" /></td>
+                    <td>Accel</td>
+                    <td>1.1.6</td>
+                </tr>
+                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
+                    <td><img width="25" src="../img/microsoft_word.png" /></td>
+                    <td>Thrust</td>
+                    <td>1.1.6</td>
+                </tr>
+                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
+                    <td><img width="25" src="../img/microsoft_word.png" /></td>
+                    <td>SpeedImg</td>
+                    <td>1.1.6</td>
+                </tr>
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+    <!--Page content-->
+    <div id="AppSettingsPage" class="MainContent">
+        <div class="MainContentHeader">
+            <i class="material-icons BackButton" onclick="appSelector_GoBack()">arrow_back_ios_new</i>
+            <h2 style="margin:0;padding:0;"> Allure (1.1.6)</h2>
+        </div>
+
+        <div class="ControlPanelBody">
+
+
+
+            <div style="display:inline-flex; width:100%;align-items:center;">
+                <img class="softwareIcon" src="../img/microsoft_word.png" />
+                <div>
+                    <!--<h2 class="AppTitle">Allure</h2>-->
+                    <!--<label class="NewAppTitle">Allure</label>-->
+                    <input type="text" class="NewAppTitle" value="Allure" onfocus="document.getElementById('editTitleControls').style.display='inline';" onfocusout="document.getElementById('editTitleControls').style.display='none';" />
+                    <div style="display:none" id="editTitleControls">
+                        <i class="material-icons done">done</i>
+                        <i class="material-icons cancel">close</i>
+                    </div>
+                    <br />
+                    <label>1.1.6</label>
+                    <br />
+                    <label>Licensed Users: 204</label>
+                </div>
+
+
+            </div>
+
+            <ul style="list-style: none;padding-left: 0;">
+                <li class="TabItem" id="generalBtn" onclick="switchTab('generalSettings', 'generalBtn')">General</li>
+                <li class="TabItem" id="usrBtn" onclick="switchTab('appUserList', 'usrBtn')">Users</li>
+                <li class="TabItem" id="serialBtn" onclick="switchTab('appSerialNumberList', 'serialBtn')">Serial Numbers</li>
+                <li class="TabItem" id="commBtn" onclick="switchTab('appCommTab', 'commBtn')">Communicate</li>
+            </ul>
+
+
+            <div class="InnerTabContent" id="generalSettings">
+                <h4>Pricing</h4>
+                <input type="text" value="25.99" />
+                <button>Set Price</button>
+
+                <br />
+                <br />
+
+                <h4>Misc. Settings</h4>
+
+                <input type="checkbox" id="pauseAccess" />
+                <label for="pauseAccess">Temporarily Block ALL Licenses</label>
+
+            </div>
+
+
+            <div class="InnerTabContent" id="appUserList">
+                <div id="UserTableContainer">
+
+                    <input class="SearchTextbox" type="text" placeholder="Search Name, Email" />
+                    <br />
+
+                    <div class="TableContainer">
+                        <table class="UserTable">
+                            <thead>
+                                <tr>
+                                    <th>First Name</th>
+                                    <th>Last Name</th>
+                                    <th>E-Mail</th>
+                                    <th>Serial Key</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody>
+                                <tr class="UserItem">
+                                    <td>Paul</td>
+                                    <td>Hatz</td>
+                                    <td>paulhatz@example.com</td>
+                                    <td>ABCDE-12345-FGHIJ-67890</td>
+                                </tr>
+
+                                <tr class="UserItem">
+                                    <td>Paul</td>
+                                    <td>Hatz</td>
+                                    <td>paulhatz@example.com</td>
+                                    <td>ABCDE-12345-FGHIJ-67890</td>
+                                </tr>
+
+                                <tr class="UserItem">
+                                    <td>Paul</td>
+                                    <td>Hatz</td>
+                                    <td>paulhatz@example.com</td>
+                                    <td>ABCDE-12345-FGHIJ-67890</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div id="UserSettinsContainer">
+                    <div style="display: inline-flex;">
+                        <i class="material-icons BackButton" onclick="userItem_GoBack()">arrow_back_ios_new</i>
+                        <label style="font-weight: bold">Paul Hatz</label>
+                    </div>
+
+                    <div style="padding: 1em;background-color:white;">
+                        <label for="userSetting_fName">First Name:</label>
+                        <input type="text" id="userSetting_fName" value="Paul" />
+
+                        <br />
+
+                        <label for="userSetting_lName">Last Name:</label>
+                        <input type="text" id="userSetting_lName" value="Hatz" />
+
+                        <br /><br />
+
+                        <label for="userSetting_email">Email:</label>
+                        <input type="email" id="userSetting_email" value="paul@example.com" />
+
+                        <br />
+                        <label for="userSetting_tel">Phone Number:</label>
+                        <input type="email" id="userSetting_tel" value="(438) 555-1004" />
+
+                        <br /><br />
+
+                        <label>Linked Serial Number:</label><label style="user-select:all">ABCDE-12345-FGHIJ-67890</label>
+                        <input type="button" id="userSetting_serialNum" value="Unlink" />
+
+                        <br />                        <br />
+
+                        <input type="button" value="Save Changes" />
+
+                        <input type="button" value="Reset Password" />
+                        <input type="button" value="Suspend Account" />
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="InnerTabContent" id="appSerialNumberList">
+
+                <div id="serialNumTable">
+
+                    <div style="display:inline-flex;width:100%;">
+                        <div style="width: 50%">
+                            <label>Registered License Keys: 204</label>
+                            <br />
+                            <label>Unregistered License Keys: 64</label>
+                            <br />
+                            <label>Total Keys: 268</label>
+                        </div>
+                        <div style="width:50%;">
+                            <i class="material-icons BackButton" style="float:right;">add</i>
+
+                   
+
+
+                        </div>
+
+                    </div>
+
+                    
+                    <br />
+                    <br />
+
+                    <input type="text" class="SearchTextbox" placeholder="Search for serial number." />
+                    <br />
+                    <div class="TableContainer">
+                        <table class="serialNumTable">
+                            <thead>
+                                <tr>
+                                    <th>Serial Number</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr class="serialItem">
+                                    <td>ABCDE-12345-FGHIJ-67890</td>
+                                    <td>Active</td>
+                                </tr>
+
+                                <tr class="serialItem">
+                                    <td>ABCDE-12345-FGHIJ-67890</td>
+                                    <td>Active</td>
+                                </tr>
+
+
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
+                <div id="serialNumberSettings">
+
+                    <div style="display: inline-flex;">
+                        <i class="material-icons BackButton" onclick="serialItem_GoBack()">arrow_back_ios_new</i>
+                        <label style="font-weight: bold">ABCDE-12345-FGHIJ-67890</label>
+                    </div>
+
+                    <div style="padding: 0 1em 0 1em; background-color:white;">
+                        <label>Status: Active</label>
+                        <br />
+                        <label>Created: 2008-11-11 13:23:44</label>
+                        <br />
+                        <label>Activated: 2008-11-11 14:03:13</label>
+                        <br />
+                        <label>Expires: </label> <input type="datetime-local" />
+                        <br />
+
+                        <input type="checkbox" id="pause_user" />
+                        <label for="pause_user">License Paused</label>
+                        <br />
+                        <a href="#">Unlink license from user</a>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <div id="appCommTab" class="InnerTabContent">
+
+                <h4>Send an E-Mail to All Users</h4>
+
+                <input class="emailSubject" type="text" placeholder="Subject Line">
+                <br /> <br />
+                <textarea style="width: 100%;height:400px;" placeholder="Email Body"></textarea>
+                <br />
+                <input type="button" value="Send" />
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+</body>
+</html>

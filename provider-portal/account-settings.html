@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Account Settings | Provider Portal | OneLicense Software Management </title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="provider-style.css">
+    <script type="text/javascript" src="script.js"></script>
+</head>
+<body>
+
+    <!--Header section-->
+    <div class="header" id="header">
+        <i class="material-icons MenuButton" style="color:white;" onclick="toggleSidebar();">menu</i>
+    </div>
+
+
+    <!--Sidebar-->
+    <div class="sidebar" id="sidebar">
+        <!--<img alt="logo" />-->
+
+        <div class="LogoContainer">
+            <a href="/index.html"> <span class="dot"></span>  </a>
+        </div>
+
+
+        <ul style="list-style: none; padding: 0;">
+            <li class="SidebarItem" onclick="window.location.href = 'provider-dashboard.html';">Dashboard</li>
+            <li class="SidebarItem" onclick="window.location.href = 'software.html';">Software</li>
+            <li class="SidebarItem" onclick="window.location.href = 'users.html';">Users</li>
+            <li class="SidebarItem" onclick="window.location.href = 'account-settings.html';">Account Settings</li>
+            <li class="SidebarItem" onclick="window.location.href = '/index.html';">Log Out</li>
+
+        </ul>
+
+    </div>
+
+
+    <!--Page content-->
+    <div id="MyAccountPage" class="MainContent">
+
+        <h2>My Account</h2>
+
+        <div class="account-section">
+            <div class="general-section">
+                <h3>General<br></h3>
+                <br>
+                <div>
+                    <label for="email">Email</label><br>
+                    <input type="email" name="email" id="email" value="user@example.com">
+                </div>
+                <div>
+                    <label for="address">Address</label><br>
+                    <input type="text" name="address" id="address" value="123 Street, City, Country">
+                </div>
+                <div>
+                    <label for="name">First Name</label><br>
+                    <input type="text" name="name" id="name" value="John">
+                </div>
+                <div>
+                    <label for="lastName">Last Name</label><br>
+                    <input type="text" name="lastName" id="lastName" value="Doe">
+                </div>
+            </div>
+            <div class="password-section">
+                <h3>Change Password<br></h3>
+                <br>
+                <div>
+                    <label for="oldPassword">Old Password</label><br>
+                    <input type="password" name="oldPassword" id="oldPassword">
+                </div>
+                <div>
+                    <label for="newPassword">New Password</label><br>
+                    <input type="password" name="newPassword" id="newPassword">
+                </div>
+                <div>
+                    <label for="ConfirmPass">Confirm New Password</label><br>
+                    <input type="password" name="ConfirmPass" id="ConfirmPass">
+                </div>
+            </div>
+
+           <button id="button">Edit</button> 
+        </div>
+
+        
+
+    </div>
+
+
+
+
+
+
+</body>
+</html>
