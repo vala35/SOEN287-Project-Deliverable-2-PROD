@@ -32,12 +32,13 @@ clientPortalRouter.get('/action/get-user-info', function(request, response){
 
             let userInfo = { firstName: result[0].firstName, lastName: result[0].lastName, email_address: result[0].email_address, address: result[0].address  };
            
-           console.log(userInfo);
             response.json(userInfo);
         }    
     );
 
 });
+
+
 
 clientPortalRouter.get(':filename(*)',(req,res) => {
     res.sendFile(path.join(__dirname + '/client-portal/' + req.params.filename));

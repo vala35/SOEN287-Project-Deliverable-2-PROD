@@ -265,6 +265,34 @@
         };
 
 
+
+        fetch('action/getsoftwarelist')
+            .then(response => response.json())
+            .then(softwareList => {
+
+                //var tbody = '';
+
+                softwareList.forEach(softwareItem => {
+                    let tr = '<tr class="SoftwareItem" onclick="appSelector_SelectApp()">';
+                    tr += '<td><img width="25" src="' + softwareItem.logoUrl + '" /></td>';
+                    tr += '<td>' + softwareItem.logoUrl + '</td>';
+                    tr += '<td>' + softwareItem.softwareName + '</td>';
+                    tr += '<td>' + softwareItem.versionNumber + '</td>';
+                    tr += '</tr>'
+
+
+                    document.getElementById("softwareListTableBody").innerHTML += tr;
+
+                    //tbody += tr;
+                });
+
+                //document.getElementById("softwareListTableBody").innerHTML = tbody;
+
+
+            });
+
+
+
     </script>
 
 </head>
@@ -322,7 +350,7 @@
                 </tr>
 
             </thead>
-            <tbody>
+            <tbody id="softwareListTableBody">
                 <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
                     <td><img width="25" src="../img/microsoft_word.png" /></td>
                     <td>Alure</td>

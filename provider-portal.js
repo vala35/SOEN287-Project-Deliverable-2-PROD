@@ -36,6 +36,48 @@ providerPortalRouter.get('/action/getusers',(req, res) => {
     });
 });
 
+
+providerPortalRouter.get('/action/getsoftwarelist', (req, res) => {
+    connection.query('SELECT * FROM Software WHERE 1', (error, result, fields) => {
+        if (error) throw error;
+
+        let softwareList = [];
+
+        result.forEach(software => {
+            softwareList.push({
+                softwareId: software.software_id,
+                softwareName: software.name,
+                logoUrl: software.icon_url,
+                versionNumber: software.version_number
+            });
+        });
+
+        res.send(userList);
+    });
+});
+
+providerPortalRouter.get('/action/getsoftwareinfo', (req, res) => {
+    connection.query('SELECT * FROM Software WHERE software_id = ?', [req.body.softwareId], (error, result, fields) => {
+        if (error) throw error;
+
+        /* let softwareList = [];
+ 
+         result.forEach(software => {
+             softwareList.push({ 
+                 softwareId: software.software_id,
+                 softwareName: software.name,
+                 logoUrl: software.icon_url,
+                 versionNumber: software.version_number
+              });
+         });
+         */
+        res.send(userList);
+    });
+});
+
+
+
+
 providerPortalRouter.get(':filename(*)',(req,res) => {
     res.sendFile(path.join(__dirname,'/provider-portal/',req.params.filename));
 });
