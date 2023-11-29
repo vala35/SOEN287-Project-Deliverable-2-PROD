@@ -52,31 +52,70 @@ providerPortalRouter.get('/action/getsoftwarelist', (req, res) => {
             });
         });
 
-        res.send(userList);
+        res.send(softwareList);
     });
 });
 
-providerPortalRouter.get('/action/getsoftwareinfo', (req, res) => {
-    connection.query('SELECT * FROM Software WHERE software_id = ?', [req.body.softwareId], (error, result, fields) => {
-        if (error) throw error;
+providerPortalRouter.get('/action/getsoftwareinfo/:softwareId', (req, res) => {
 
-        /* let softwareList = [];
- 
-         result.forEach(software => {
-             softwareList.push({ 
-                 softwareId: software.software_id,
-                 softwareName: software.name,
-                 logoUrl: software.icon_url,
-                 versionNumber: software.version_number
-              });
-         });
-         */
-        res.send(userList);
+    let softwareId = req.params.softwareId;
+
+    connection.query('SELECT * FROM Software WHERE software_id = ?',
+        [softwareId],
+        (error, result, fields) => {
+            if (error) throw error;
+
+            if (result.length > 0) {
+                console.log(result[0]);
+
+                res.send(result[0]);
+            }
+            else {
+                console.log("Invalid softwareId: " + softwareId);
+            }
     });
 });
 
+providerPortalRouter.get('/action/getsoftwareinfo/:softwareId/users', (req, res) => {
 
+    let softwareId = req.params.softwareId;
 
+    connection.query('SELECT * FROM software_users_view WHERE software_id = ?',
+        [softwareId],
+        (error, result, fields) => {
+            if (error) throw error;
+
+            if (result.length > 0) {
+                console.log(result[0]);
+
+                res.send(result);
+            }
+            else {
+                console.log("Invalid softwareId: " + softwareId);
+            }
+        });
+});
+
+providerPortalRouter.get('/action/getsoftwareinfo/:softwareId/userinfo/:userId', (req, res) => {
+
+    let softwareId = req.params.softwareId;
+    let userId = req.params.userId;
+
+    connection.query('SELECT * FROM software_users_view WHERE software_id = ? AND user_id = ?',
+        [softwareId, userId],
+        (error, result, fields) => {
+            if (error) throw error;
+
+            if (result.length > 0) {
+                console.log(result[0]);
+
+                res.send(result);
+            }
+            else {
+                console.log("Invalid softwareId: " + softwareId);
+            }
+        });
+});
 
 providerPortalRouter.get(':filename(*)',(req,res) => {
     res.sendFile(path.join(__dirname,'/provider-portal/',req.params.filename));

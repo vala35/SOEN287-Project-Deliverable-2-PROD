@@ -21,10 +21,9 @@ app.use(session( {
         return uuidv4()
     },
     cookie: {
-        maxAge: 60000        
+        maxAge: 60000 * 15 //15 minutes        
         //secure: true
     },
-
 }));
 
 app.use(express.json());

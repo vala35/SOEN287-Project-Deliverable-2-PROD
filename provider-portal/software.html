@@ -220,7 +220,39 @@
             currentTabId = tabId;
         }
 
-        function appSelector_SelectApp() {
+        function appSelector_SelectApp(softwareId) {
+            fetch('action/getsoftwareinfo/' + softwareId)
+                .then(response => response.json())
+                .then(sofwareInfo => {
+                    
+                    document.getElementById("softwareNameTitle").value = sofwareInfo.name;
+                    document.getElementById("currentAppTitle").innerHTML = ' ' + sofwareInfo.name + ' (' + sofwareInfo.version_number + ')';
+                    document.getElementById("softwareVersionNumber").innerHTML = sofwareInfo.version_number;
+                });
+            fetch('action/getsoftwareinfo/' + softwareId + '/users')
+                .then(response => response.json())
+                .then(userList => {
+
+                    document.getElementById("softwareLicensedUserCount").innerHTML = "Licensed Users: " + userList.length;
+                    document.getElementById("userListBody").innerHTML = '';
+
+                    userList.forEach(user => {
+                        let tr = '<tr class="UserItem" onclick="userItem_Edit(' + user.user_id + ')">';
+
+                        tr += '<td>' + user.firstName + '</td>';
+                        tr += '<td>' + user.lastName + '</td>';
+                        tr += '<td>' + user.email_address + '</td>';
+                        tr += '<td>' + user.license_ley + '</td>';
+
+                        tr += '</tr>';
+
+                        document.getElementById("userListBody").innerHTML += tr;
+                    });
+
+
+
+                });
+
             document.getElementById("SoftwareListPage").style.display = "None";
             document.getElementById("AppSettingsPage").style.display = "block";
         }
@@ -239,7 +271,17 @@
             document.getElementById("serialNumTable").style.display = "block";
         }
 
-        function userItem_Edit() {
+        function userItem_Edit(id) {
+
+            fetch('action/getsoftwareinfo/' + softwareId + '/userinfo/' + id)
+                .then(response => response.json())
+                .then(user => {
+                    document.getElementById("userSetting_fName").value = user.firstName;
+                    document.getElementById("userSetting_lName").value = user.lastName;
+                    document.getElementById("userSetting_email").value = user.email_address;
+                    document.getElementById("userSetting_tel").value = user.phone_number;
+                });
+
             document.getElementById("UserTableContainer").style.display = "none";
             document.getElementById("UserSettinsContainer").style.display = "block";
         }
@@ -256,12 +298,6 @@
             for (let i = 0; i < elements.length; i++) {
                 elements[i].addEventListener("click", serialItem_Edit);
             }
-
-            elements = document.getElementsByClassName("UserItem");
-
-            for (let i = 0; i < elements.length; i++) {
-                elements[i].addEventListener("click", userItem_Edit);
-            }
         };
 
 
@@ -269,30 +305,17 @@
         fetch('action/getsoftwarelist')
             .then(response => response.json())
             .then(softwareList => {
-
-                //var tbody = '';
-
                 softwareList.forEach(softwareItem => {
-                    let tr = '<tr class="SoftwareItem" onclick="appSelector_SelectApp()">';
+                    let tr = '<tr class="SoftwareItem" onclick="appSelector_SelectApp(' + softwareItem.softwareId + ')">';
                     tr += '<td><img width="25" src="' + softwareItem.logoUrl + '" /></td>';
-                    tr += '<td>' + softwareItem.logoUrl + '</td>';
                     tr += '<td>' + softwareItem.softwareName + '</td>';
                     tr += '<td>' + softwareItem.versionNumber + '</td>';
                     tr += '</tr>'
 
-
                     document.getElementById("softwareListTableBody").innerHTML += tr;
 
-                    //tbody += tr;
                 });
-
-                //document.getElementById("softwareListTableBody").innerHTML = tbody;
-
-
             });
-
-
-
     </script>
 
 </head>
@@ -351,6 +374,7 @@
 
             </thead>
             <tbody id="softwareListTableBody">
+                <!-- TEST DATA
                 <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
                     <td><img width="25" src="../img/microsoft_word.png" /></td>
                     <td>Alure</td>
@@ -376,7 +400,7 @@
                     <td><img width="25" src="../img/microsoft_word.png" /></td>
                     <td>SpeedImg</td>
                     <td>1.1.6</td>
-                </tr>
+                </tr>-->
             </tbody>
 
 
@@ -390,7 +414,7 @@
     <div id="AppSettingsPage" class="MainContent">
         <div class="MainContentHeader">
             <i class="material-icons BackButton" onclick="appSelector_GoBack()">arrow_back_ios_new</i>
-            <h2 style="margin:0;padding:0;"> Allure (1.1.6)</h2>
+            <h2 style="margin:0;padding:0;" id="currentAppTitle"></h2>
         </div>
 
         <div class="ControlPanelBody">
@@ -402,15 +426,15 @@
                 <div>
                     <!--<h2 class="AppTitle">Allure</h2>-->
                     <!--<label class="NewAppTitle">Allure</label>-->
-                    <input type="text" class="NewAppTitle" value="Allure" onfocus="document.getElementById('editTitleControls').style.display='inline';" onfocusout="document.getElementById('editTitleControls').style.display='none';" />
+                    <input type="text" class="NewAppTitle" id="softwareNameTitle" value="" onfocus="document.getElementById('editTitleControls').style.display='inline';" onfocusout="document.getElementById('editTitleControls').style.display='none';" />
                     <div style="display:none" id="editTitleControls">
                         <i class="material-icons done">done</i>
                         <i class="material-icons cancel">close</i>
                     </div>
                     <br />
-                    <label>1.1.6</label>
+                    <label id="softwareVersionNumber">0</label>
                     <br />
-                    <label>Licensed Users: 204</label>
+                    <label id="softwareLicensedUserCount"></label>
                 </div>
 
 
@@ -426,7 +450,7 @@
 
             <div class="InnerTabContent" id="generalSettings">
                 <h4>Pricing</h4>
-                <input type="text" value="25.99" />
+                <input type="text" value="0" id="softwarePrice" />
                 <button>Set Price</button>
 
                 <br />
@@ -458,8 +482,8 @@
 
                             </thead>
 
-                            <tbody>
-                                <tr class="UserItem">
+                            <tbody id="userListBody">
+                                <!--<tr class="UserItem">
                                     <td>Paul</td>
                                     <td>Hatz</td>
                                     <td>paulhatz@example.com</td>
@@ -478,7 +502,7 @@
                                     <td>Hatz</td>
                                     <td>paulhatz@example.com</td>
                                     <td>ABCDE-12345-FGHIJ-67890</td>
-                                </tr>
+                                </tr>-->
 
                             </tbody>
                         </table>
@@ -494,7 +518,7 @@
 
                     <div style="padding: 1em;background-color:white;">
                         <label for="userSetting_fName">First Name:</label>
-                        <input type="text" id="userSetting_fName" value="Paul" />
+                        <input type="text" id="userSetting_fName" value="" />
 
                         <br />
 
@@ -542,10 +566,6 @@
                         </div>
                         <div style="width:50%;">
                             <i class="material-icons BackButton" style="float:right;">add</i>
-
-                   
-
-
                         </div>
 
                     </div>

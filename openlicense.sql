@@ -47,7 +47,7 @@ CREATE TABLE LicenseKeys(
 
 
 CREATE VIEW software_users_view AS
-	SELECT u.user_id, u.firstName, u.lastName, u.email_address, u.phone_number
+	SELECT u.user_id, u.firstName, u.lastName, u.email_address, u.phone_number, s.software_id, lk.license_key
 		FROM Users u
 	JOIN LicenseKeys lk ON u.user_id = lk.userID
 	JOIN Software s ON lk.softwareId = s.software_id;
