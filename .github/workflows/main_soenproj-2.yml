@@ -59,4 +59,4 @@ jobs:
           app-name: 'SOENProj-2'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CAF30777C9204D698F2BECFB86FABBFF }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_58C02CA5241B41B3AE43032D11F34FB8 }}
