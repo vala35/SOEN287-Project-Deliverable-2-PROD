@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>End License | Client Portal | OneLicense Software Management </title>
+    <link rel="stylesheet" href="/client_styles.css">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="/Functions.js"></script>
+
+</head>
+<body>
+    <div class="header" id="header">
+		<i class="material-icons MenuButton" style="color:white;" onclick="toggleSidebar();">menu</i>
+	</div>
+
+<div class="main">
+    <div class="menu" id="sidebar">
+        <a id="logo" href="../index.html">
+            <div class="logobox"></div></a>
+        <a href="ClientPage.html">Dashboard</a>
+        <a href="AccountSettings.html">Account Settings</a>
+        <a href="AddLicense.html">Add License</a>
+        <a href="RenewLicense.html">Renew License</a>
+        <a href="EndLicense.html">End License</a>
+        <a href="../index.html">Log Out</a>
+    </div>
+    <div class="background-container">
+        <div class="background-image"></div>
+        <div class="body1">
+        <h1><br>End A License<br></h1>
+        <br>
+        <form id="endLicence" action="/end-license" method="post" onsubmit="return confirmEnd()">
+            <div>
+                <label for="LicenseChoice">Choose a License to end:<br></label>
+                <select name="LicenseChoice" id="LicenseChoice">
+                </select>
+            </div>
+            <br>
+            <input type="submit" id="button" type="button" value="End">
+        </form>
+        </div>
+    </div>
+</div>
+<script>
+        fetch('/get-user-licenses')
+        .then(response => response.json())
+        .then(result => {
+        let licenses = result;
+        let select = document.getElementById('LicenseChoice');
+        if (licenses) {
+            licenses.forEach(function (license, index) {
+                var option = document.createElement('option');
+                option.value = license.license_key;
+                option.text = license.softwareName;
+                select.appendChild(option);
+            });
+        }
+        })
+
+        function confirmEnd(){
+            let message = "Are you sure you want end your subscription?";
+            return confirm(message);
+        }
+
+</script>
+</body>
+</html>

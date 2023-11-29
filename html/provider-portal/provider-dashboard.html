@@ -1,0 +1,135 @@
+﻿<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<title>Provider Dashboard | OneLicense Software Management </title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+	<link rel="stylesheet" href="/provider-style.css">
+
+	<style>
+		h3, h2, label {
+			font-family: Verdana, sans-serif;
+			user-select: none;
+		}
+
+		div.StatusContainer {
+			display: flex;
+		
+		}
+
+		div.StatusItem {
+			width: 200px;
+			height: 85px;
+			background-color: white;
+			margin: 1em;
+			padding: 1em;
+			text-align: center;
+		}
+
+		label.StatNumber {
+			font-size: 48px;
+		}
+
+		label.StatLabel {
+			color: #888;
+		}
+
+
+        @media screen and (min-width: 481px) {
+            div.StatusContainer {
+                flex-direction: row;
+            }
+        }
+            @media screen and (max-width: 480px) {
+                div.StatusContainer {
+                    flex-direction: column;
+                }
+            }
+
+
+	</style>
+
+	<script type="text/javascript" src="/script.js"></script>
+
+	<script>
+		
+		
+		
+		
+	</script>
+</head>
+<body>
+
+    <!--Header section-->
+	<div class="header" id="header">
+		<i class="material-icons MenuButton" style="color:white;" onclick="toggleSidebar();">menu</i>
+
+		<!-- <img alt="usericon"style="float:right" /> -->
+	</div>
+
+
+    <!--Sidebar-->
+    <div class="sidebar" id="sidebar">
+        <!-- <img alt="logo" /> -->
+
+        <div class="LogoContainer">
+            <a href="../index.html"> <span class="dot"></span>  </a>
+        </div>
+
+        <ul style="list-style: none; padding: 0;">
+			<li class="SidebarItem" onclick="window.location.href = 'provider-dashboard.html';">Dashboard</li>
+            <li class="SidebarItem" onclick="window.location.href = 'software.html';">Software</li>
+            <li class="SidebarItem" onclick="window.location.href = 'users.html';">Users</li>
+			<li class="SidebarItem" onclick="window.location.href = 'account-settings.html';">Account Settings</li>
+			<li class="SidebarItem" onclick="window.location.href = '../index.html';">Log Out</li>
+
+        </ul>
+
+    </div>
+
+    <!--Page content-->
+    <div class="MainContent" style="overflow-y: auto;">
+
+        <div style="text-align: left;padding:3em;">
+			<h2>Hello, Paul!</h2>
+			<div class="StatusContainer">
+				<div class="StatusItem">
+					<label class="StatNumber">260</label>
+					<br />
+					<label class="StatLabel">Licensed Users</label>
+				</div>
+				<div class="StatusItem">
+					<label class="StatNumber">8</label>
+					<br />
+					<label class="StatLabel">Applications Running</label>
+				</div>
+				<div class="StatusItem">
+					<label class="StatNumber">0</label>
+					<br />
+					<label class="StatLabel">Issues Reported</label>
+				</div>
+			</div>
+			
+			<h2>Logs</h2>
+			
+			<textarea style="width: 100%;height:50vh">Last log-in: Fri Nov 03/2023@23:59 GMT-04:00 
+____________________________
+Thu Nov 02/2023@11:36 GMT-04:00 / HATZ, PAUL activated license for ALURE 1.1.6 SN:<ABCDE-12345-FGHIJ-67890> EXP: Fri Nov 01/2024@11:36 GMT-04:00 /.
+
+				</textarea>
+			
+			
+		</div>
+        
+       
+     
+	</div>
+
+
+
+</body>
+
+
+</html>
