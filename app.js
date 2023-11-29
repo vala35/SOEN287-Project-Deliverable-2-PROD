@@ -39,12 +39,12 @@ app.use('/provider-portal', providerPortalRouter);
 app.use('/client-portal', clientPortalRouter);
 app.use('/auth-form', authRouter)
 
-//app.listen(3000);
-
+app.listen(3000);
+/*
 var privateKey = fs.readFileSync( 'cert/privkey.pem' );
 var certificate = fs.readFileSync( 'cert/fullchain.pem' );
 
 https.createServer({
     key: privateKey,
     cert: certificate
-}, app).listen(3001);
+}, app).listen(3001);*/

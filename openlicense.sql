@@ -47,12 +47,20 @@ CREATE TABLE LicenseKeys(
 
 
 CREATE VIEW software_users_view AS
-	SELECT u.user_id, u.firstName, u.lastName, u.email_address, u.phone_number, s.software_id, lk.license_key
+	SELECT u.user_id, u.firstName, u.lastName, u.email_address, u.phone_number, u.status, s.software_id, lk.license_key
 		FROM Users u
 	JOIN LicenseKeys lk ON u.user_id = lk.userID
 	JOIN Software s ON lk.softwareId = s.software_id;
 
 
+
+CREATE VIEW software_licensekeys_view AS
+	SELECT lk.license_key, lk.status, lk.creationDate, lk.activationDate, lk.expiryDate, u.user_id, s.software_id
+		FROM LicenseKeys lk
+	JOIN Users u ON u.user_id = lk.userID
+	JOIN Software s ON lk.softwareId = s.software_id;
+
+	#CREATE VIEW software_licensekeys_view AS SELECT lk.license_key, lk.status, lk.creationDate, lk.activationDate, lk.expiryDate, u.user_id, s.software_id FROM LicenseKeys lk JOIN Users u ON u.user_id = lk.userID JOIN Software s ON lk.softwareId = s.software_id;
 
 /* End of table structure setup */
 
@@ -60,10 +68,10 @@ CREATE VIEW software_users_view AS
 
 /* Start of sample data insertion */
 
-INSERT INTO Users (user_id, firstName, lastName, email_address, phone_number, password_hash, status, customer_notes) VALUES
-(1, 'Paul', 'Hatz', 'paul@hatz.dev', '123456789', 'gg', 'active', NULL),
-(2, 'John', 'Smith', 'john@hatz.dev', '1234560000', 'gg', 'active', NULL),
-(3, 'Bruce', 'Smith', 'bruce@hatz.dev', '5559920', 'glgrepl;kfe', 'active', NULL);
+INSERT INTO Users (user_id, firstName, lastName, email_address, phone_number, address, password_hash, status, customer_notes) VALUES
+(1, 'Paul', 'Hatz', 'paul@hatz.dev', '123456789', '123 abc st.', 'gg', 'active', NULL),
+(2, 'John', 'Smith', 'john@hatz.dev', '1234560000', NULL, 'gg', 'active', NULL),
+(3, 'Bruce', 'Smith', 'bruce@hatz.dev', '5559920', NULL, 'glgrepl;kfe', 'active', NULL);
 
 
 INSERT INTO Software (software_id, name, status, version_number, executable_link, price) VALUES
@@ -81,5 +89,5 @@ INSERT INTO LicenseKeys (license_key, softwareId, status, creationDate, activati
 /* End of sample data insertion */
 
 
-SELECT * FROM software_users_view 
-	WHERE software_id = x
+/*SELECT * FROM software_users_view 
+	WHERE software_id = x*/

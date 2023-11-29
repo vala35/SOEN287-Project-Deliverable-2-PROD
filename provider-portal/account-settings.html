@@ -8,6 +8,23 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="provider-style.css">
     <script type="text/javascript" src="script.js"></script>
+
+
+    <script>
+
+        fetch('action/getaccountdetails')
+            .then(response => response.json())
+            .then(user => {
+
+                document.getElementById("name").value = user.firstName;
+                document.getElementById("lastName").value = user.lastName;
+                document.getElementById("email").value = user.email_address;
+                document.getElementById("address").value = user.address;
+            });
+
+
+    </script>
+
 </head>
 <body>
 

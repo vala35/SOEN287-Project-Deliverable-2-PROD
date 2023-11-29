@@ -207,6 +207,8 @@
 
 
     <script>
+        var currentSoftwareId = 0;
+        var currentUserIdSelected = 0;
 
         var currentTabId = "generalSettings";
         var currBtnId = "generalBtn";
@@ -221,13 +223,17 @@
         }
 
         function appSelector_SelectApp(softwareId) {
+
+            currentSoftwareId = softwareId;
+
             fetch('action/getsoftwareinfo/' + softwareId)
                 .then(response => response.json())
-                .then(sofwareInfo => {
+                .then(softwareInfo => {
                     
-                    document.getElementById("softwareNameTitle").value = sofwareInfo.name;
-                    document.getElementById("currentAppTitle").innerHTML = ' ' + sofwareInfo.name + ' (' + sofwareInfo.version_number + ')';
-                    document.getElementById("softwareVersionNumber").innerHTML = sofwareInfo.version_number;
+                    document.getElementById("softwareNameTitle").value = softwareInfo.name;
+                    document.getElementById("currentAppTitle").innerHTML = ' ' + softwareInfo.name + ' (' + softwareInfo.version_number + ')';
+                    document.getElementById("softwareVersionNumber").innerHTML = softwareInfo.version_number;
+                    document.getElementById("softwarePrice").value = softwareInfo.price;
                 });
             fetch('action/getsoftwareinfo/' + softwareId + '/users')
                 .then(response => response.json())
@@ -253,6 +259,32 @@
 
                 });
 
+            fetch('action/getsoftwareinfo/' + softwareId + '/licensekeys')
+                .then(response => response.json())
+                .then(serialList => {
+
+                   // document.getElementById("softwareLicensedUserCount").innerHTML = "Licensed Users: " + userList.length;
+                    document.getElementById("serialKeyListBody").innerHTML = '';
+
+                    document.getElementById("registeredLicenseKeys").innerHTML = serialList.filter(key => { return key.userId !== 'NULL'; }).length;
+                    document.getElementById("totalLicenseKeys").innerHTML = serialList.length;
+
+                    serialList.forEach(key => {
+                        let tr = '<tr class="serialItem" onclick="serialItem_Edit(' + softwareId + ', \'' + key.license_key + '\')">';
+
+                        tr += '<td>' + key.license_key + '</td>';
+                        tr += '<td>' + key.status + '</td>';
+                        
+
+                        tr += '</tr>';
+
+                        document.getElementById("serialKeyListBody").innerHTML += tr;
+                    });
+
+
+
+                });
+
             document.getElementById("SoftwareListPage").style.display = "None";
             document.getElementById("AppSettingsPage").style.display = "block";
         }
@@ -262,7 +294,27 @@
             document.getElementById("AppSettingsPage").style.display = "None";
         }
 
-        function serialItem_Edit() {
+        function serialItem_Edit(softwareId, key) {
+
+            document.getElementById("navBackSerialSettings").innerHTML = key;
+
+            fetch('action/getsoftwareinfo/' + softwareId + '/licensekey/' + key)
+                .then(response => response.json())
+                .then(serialKeyInfo => {
+
+
+                    document.getElementById("serialKeyStatus").innerHTML = '<b>' + serialKeyInfo.status + '</b>';
+                    document.getElementById("serialKeyCreated").innerHTML = serialKeyInfo.creationDate.substring(0, 16);
+                    document.getElementById("serialKeyActivated").innerHTML = serialKeyInfo.activationDate;
+                    document.getElementById("serialKeyExpires").value = serialKeyInfo.expiryDate.substring(0, 16);
+
+
+                    //serialKeyInfo
+
+
+
+                });
+
             document.getElementById("serialNumTable").style.display = "none";
             document.getElementById("serialNumberSettings").style.display = "block";
         }
@@ -273,16 +325,19 @@
 
         function userItem_Edit(softwareId, id) {
 
+            currentUserIdSelected = id;
+
             fetch('action/getsoftwareinfo/' + softwareId + '/userinfo/' + id)
                 .then(response => response.json())
                 .then(user => {
 
-                    
-
+                    document.getElementById("userSetting_status").innerHTML = "Status: <b>" + user.status + "</b>";
+                    document.getElementById("navBackUsername").innerHTML = user.firstName + ' ' + user.lastName;
                     document.getElementById("userSetting_fName").value = user.firstName;
                     document.getElementById("userSetting_lName").value = user.lastName;
                     document.getElementById("userSetting_email").value = user.email_address;
                     document.getElementById("userSetting_tel").value = user.phone_number;
+                    document.getElementById("userSetting_serialKey").innerHTML = user.license_key;
                 });
 
             document.getElementById("UserTableContainer").style.display = "none";
@@ -293,17 +348,6 @@
             document.getElementById("UserSettinsContainer").style.display = "None";
             document.getElementById("UserTableContainer").style.display = "block";
         }
-
-
-        window.onload = function () {
-            var elements = document.getElementsByClassName("serialItem");
-
-            for (let i = 0; i < elements.length; i++) {
-                elements[i].addEventListener("click", serialItem_Edit);
-            }
-        };
-
-
 
         fetch('action/getsoftwarelist')
             .then(response => response.json())
@@ -319,6 +363,42 @@
 
                 });
             });
+
+
+
+        function appSetting_setPrice()
+        {
+            fetch('action/setsoftwareinfo/price', {
+                method: "POST",
+                body: JSON.stringify({
+                    softwareId: currentSoftwareId,
+                    price: document.getElementById("softwarePrice").value
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+        }
+
+
+        function appSetting_updateUser()
+        {
+            fetch('action/setsoftwareinfo/updateuser', {
+                method: "POST",
+                body: JSON.stringify({
+                    userId: currentUserIdSelected,
+                    firstName: document.getElementById("userSetting_fName").value,
+                    lastName: document.getElementById("userSetting_lName").value,
+                    emailAddress: document.getElementById("userSetting_email").value,
+                    telephoneNumber: document.getElementById("userSetting_tel").value,
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+        }
+
+
     </script>
 
 </head>
@@ -327,14 +407,11 @@
     <!--Header section-->
     <div class="header" id="header">
         <i class="material-icons MenuButton" style="color:white;" onclick="toggleSidebar();">menu</i>
-
-        <!--<img alt="usericon"style="float:right" />-->
     </div>
 
 
     <!--Sidebar-->
     <div class="sidebar" id="sidebar">
-        <!--<img alt="logo" />-->
 
         <div class="LogoContainer">
             <a href="../index.html"> <span class="dot"></span>  </a>
@@ -377,33 +454,7 @@
 
             </thead>
             <tbody id="softwareListTableBody">
-                <!-- TEST DATA
-                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
-                    <td><img width="25" src="../img/microsoft_word.png" /></td>
-                    <td>Alure</td>
-                    <td>1.1.6</td>
-                </tr>
-                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
-                    <td><img width="25" src="../img/microsoft_word.png" /></td>
-
-                    <td>Cronos</td>
-                    <td>1.1.6</td>
-                </tr>
-                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
-                    <td><img width="25" src="../img/microsoft_word.png" /></td>
-                    <td>Accel</td>
-                    <td>1.1.6</td>
-                </tr>
-                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
-                    <td><img width="25" src="../img/microsoft_word.png" /></td>
-                    <td>Thrust</td>
-                    <td>1.1.6</td>
-                </tr>
-                <tr class="SoftwareItem" onclick="appSelector_SelectApp()">
-                    <td><img width="25" src="../img/microsoft_word.png" /></td>
-                    <td>SpeedImg</td>
-                    <td>1.1.6</td>
-                </tr>-->
+             
             </tbody>
 
 
@@ -454,7 +505,7 @@
             <div class="InnerTabContent" id="generalSettings">
                 <h4>Pricing</h4>
                 <input type="text" value="0" id="softwarePrice" />
-                <button>Set Price</button>
+                <button onclick="appSetting_setPrice()">Set Price</button>
 
                 <br />
                 <br />
@@ -486,27 +537,6 @@
                             </thead>
 
                             <tbody id="userListBody">
-                                <!--<tr class="UserItem">
-                                    <td>Paul</td>
-                                    <td>Hatz</td>
-                                    <td>paulhatz@example.com</td>
-                                    <td>ABCDE-12345-FGHIJ-67890</td>
-                                </tr>
-
-                                <tr class="UserItem">
-                                    <td>Paul</td>
-                                    <td>Hatz</td>
-                                    <td>paulhatz@example.com</td>
-                                    <td>ABCDE-12345-FGHIJ-67890</td>
-                                </tr>
-
-                                <tr class="UserItem">
-                                    <td>Paul</td>
-                                    <td>Hatz</td>
-                                    <td>paulhatz@example.com</td>
-                                    <td>ABCDE-12345-FGHIJ-67890</td>
-                                </tr>-->
-
                             </tbody>
                         </table>
                     </div>
@@ -516,10 +546,15 @@
                 <div id="UserSettinsContainer">
                     <div style="display: inline-flex;">
                         <i class="material-icons BackButton" onclick="userItem_GoBack()">arrow_back_ios_new</i>
-                        <label style="font-weight: bold">Paul Hatz</label>
+                        <label style="font-weight: bold" id="navBackUsername"></label>
                     </div>
 
                     <div style="padding: 1em;background-color:white;">
+
+                        <label id="userSetting_status"></label>
+
+                        <br /><br />
+
                         <label for="userSetting_fName">First Name:</label>
                         <input type="text" id="userSetting_fName" value="" />
 
@@ -539,12 +574,12 @@
 
                         <br /><br />
 
-                        <label>Linked Serial Number:</label><label style="user-select:all">ABCDE-12345-FGHIJ-67890</label>
+                        <label>Linked Serial Number:</label><label style="user-select:all" id="userSetting_serialKey">ABCDE-12345-FGHIJ-67890</label>
                         <input type="button" id="userSetting_serialNum" value="Unlink" />
 
                         <br />                        <br />
 
-                        <input type="button" value="Save Changes" />
+                        <input type="button" value="Save Changes" onclick="appSetting_updateUser()" />
 
                         <input type="button" value="Reset Password" />
                         <input type="button" value="Suspend Account" />
@@ -561,11 +596,11 @@
 
                     <div style="display:inline-flex;width:100%;">
                         <div style="width: 50%">
-                            <label>Registered License Keys: 204</label>
+                            <label >Registered License Keys:</label>
+                            <label id="registeredLicenseKeys"></label>
                             <br />
-                            <label>Unregistered License Keys: 64</label>
-                            <br />
-                            <label>Total Keys: 268</label>
+                            <label>Total Keys:</label>
+                            <label id="totalLicenseKeys"></label>
                         </div>
                         <div style="width:50%;">
                             <i class="material-icons BackButton" style="float:right;">add</i>
@@ -588,19 +623,7 @@
                                 </tr>
                             </thead>
 
-                            <tbody>
-                                <tr class="serialItem">
-                                    <td>ABCDE-12345-FGHIJ-67890</td>
-                                    <td>Active</td>
-                                </tr>
-
-                                <tr class="serialItem">
-                                    <td>ABCDE-12345-FGHIJ-67890</td>
-                                    <td>Active</td>
-                                </tr>
-
-
-
+                            <tbody id="serialKeyListBody">
                             </tbody>
                         </table>
                     </div>
@@ -611,17 +634,20 @@
 
                     <div style="display: inline-flex;">
                         <i class="material-icons BackButton" onclick="serialItem_GoBack()">arrow_back_ios_new</i>
-                        <label style="font-weight: bold">ABCDE-12345-FGHIJ-67890</label>
+                        <label style="font-weight: bold" id="navBackSerialSettings"></label>
                     </div>
 
                     <div style="padding: 0 1em 0 1em; background-color:white;">
-                        <label>Status: Active</label>
+                        <label>Status:</label>
+                        <label id="serialKeyStatus"></label>
                         <br />
-                        <label>Created: 2008-11-11 13:23:44</label>
+                        <label>Created:</label>
+                        <label id="serialKeyCreated">2008-11-11 13:23:44</label>
                         <br />
-                        <label>Activated: 2008-11-11 14:03:13</label>
+                        <label>Activated:</label>
+                        <label id="serialKeyActivated">2008-11-11 14:03:13</label>
                         <br />
-                        <label>Expires: </label> <input type="datetime-local" />
+                        <label>Expires: </label> <input type="datetime-local" id="serialKeyExpires"/>
                         <br />
 
                         <input type="checkbox" id="pause_user" />
