@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>End License | Client Portal | OneLicense Software Management </title>
+    <link rel="stylesheet" href="client_styles.css">
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="Functions.js"></script>
+
+</head>
+<body>
+    <div class="header" id="header">
+		<i class="material-icons MenuButton" style="color:white;" onclick="toggleSidebar();">menu</i>
+	</div>
+
+<div class="main">
+    <div class="menu" id="sidebar">
+        <a id="logo" href="../index.html">
+            <div class="logobox"></div></a>
+        <a href="ClientPage.html">Dashboard</a>
+        <a href="AccountSettings.html">Account Settings</a>
+        <a href="AddLicense.html">Add License</a>
+        <a href="RenewLicense.html">Renew License</a>
+        <a href="EndLicense.html">End License</a>
+        <a href="../index.html">Log Out</a>
+    </div>
+    <div class="background-container">
+        <div class="background-image"></div>
+        <div class="body1">
+        <h1><br>End A License<br></h1>
+        <br>
+        <form id="endLicence">
+            <div>
+                <label for="LicenseChoice">Choose a License to end:<br></label>
+                <select name="renewalTime" id="renewalTime">
+                    <option value="Licence1">Licence1</option>
+                    <option value="Licence2">Licence2</option>
+                    <option value="Licence3">Licence3</option>
+                </select>
+            </div>
+        </form><br>
+            <button id="button" type="button">End</button>
+        </div>
+    </div>
+</div>
+<script>
+    // EndLicense.html
+    document.addEventListener('DOMContentLoaded', function () {
+        var licenses = JSON.parse(localStorage.getItem('licenses'));
+        var form = document.querySelector('form');
+
+        // Checking if there are licenses stored in the local storage
+        if (licenses) {
+            licenses.forEach(function (license, index) {
+                var radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'LicenseChoice';
+                radio.value = index;
+
+                var label = document.createElement('label');
+                label.textContent = license.Software;
+
+                form.appendChild(radio);
+                form.appendChild(label);
+                form.appendChild(document.createElement('br'));
+            });
+        }
+        document.getElementById('button').addEventListener('click',removeLicense);
+    });
+</script>
+</body>
+</html>

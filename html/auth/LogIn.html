@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Client Login | OneLicense Software Management </title>
-    <link rel="stylesheet" href="/auth_style.css">
+    <link rel="stylesheet" href="auth_style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
@@ -14,16 +14,16 @@
     </header>
     <h1>Client Portal Login</h1>
     <main>
+        <!-- Simple login form. No action yet -->
         <div class ="Login">
-            <form action="/client-auth-form" method="post">
+            <form action="/auth-form/login/client" method="post">
                 <label for="email"> Email Address</label><br>
-                <input id="cEmail" type="email" name="email" required><br>
+                <input type="email" name="email" required><br>
                 <label for="PW">Password</label><br>
-                <input id="cPassword" type="password" name="password" required><br><br>
+                <input type="password" name="password" required><br><br>
                 <input type="submit" value="Log in">
             </form>
         </div>
-
 
         <div class ="ResetPasswordPrompt">
             <h4><a href="ForgotPassword.html">Forgot Password?</a></h4>
