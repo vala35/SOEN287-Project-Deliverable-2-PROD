@@ -109,7 +109,7 @@ providerPortalRouter.get('/action/getsoftwareinfo/:softwareId/userinfo/:userId',
             if (result.length > 0) {
                 console.log(result[0]);
 
-                res.send(result);
+                res.send(result[0]);
             }
             else {
                 console.log("Invalid softwareId: " + softwareId);

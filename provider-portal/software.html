@@ -237,12 +237,12 @@
                     document.getElementById("userListBody").innerHTML = '';
 
                     userList.forEach(user => {
-                        let tr = '<tr class="UserItem" onclick="userItem_Edit(' + user.user_id + ')">';
+                        let tr = '<tr class="UserItem" onclick="userItem_Edit(' + softwareId + ', ' + user.user_id + ')">';
 
                         tr += '<td>' + user.firstName + '</td>';
                         tr += '<td>' + user.lastName + '</td>';
                         tr += '<td>' + user.email_address + '</td>';
-                        tr += '<td>' + user.license_ley + '</td>';
+                        tr += '<td>' + user.license_key + '</td>';
 
                         tr += '</tr>';
 
@@ -271,11 +271,14 @@
             document.getElementById("serialNumTable").style.display = "block";
         }
 
-        function userItem_Edit(id) {
+        function userItem_Edit(softwareId, id) {
 
             fetch('action/getsoftwareinfo/' + softwareId + '/userinfo/' + id)
                 .then(response => response.json())
                 .then(user => {
+
+                    
+
                     document.getElementById("userSetting_fName").value = user.firstName;
                     document.getElementById("userSetting_lName").value = user.lastName;
                     document.getElementById("userSetting_email").value = user.email_address;
