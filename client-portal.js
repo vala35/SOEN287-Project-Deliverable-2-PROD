@@ -38,6 +38,58 @@ clientPortalRouter.get('/action/get-user-info', function(request, response){
 
 });
 
+clientPortalRouter.get('/action/get-user-licenses', function(request, response){
+    connection.query('SELECT * FROM clientlicenses WHERE userID = ?',
+    [request.session.userInfo.userId],
+    function(error, result, fields){
+        if(error) throw error;
+        if (result.length>0){
+            response.json(result);
+        }
+    });
+});
+
+clientPortalRouter.post('/action/end-license', function(request, response){
+    let licenseKey = request.body.LicenseChoice;
+    connection.query('UPDATE licensekeys SET status = "inactive" WHERE license_key = ?',
+    [licenseKey]);
+    response.redirect("/client-portal/ClientPage.html");
+});
+
+clientPortalRouter.post('/action/renew-license', function(request, response){
+    let renewalTerm = request.body.renewalTime.substring(0,1);
+    let licenseKey = request.body.LicenseChoice;
+    connection.query('UPDATE licensekeys SET expiryDate = DATE_ADD(expiryDate, INTERVAL ? YEAR) WHERE license_key = ?',
+    [renewalTerm, licenseKey]);
+    response.redirect("/client-portal/ClientPage.html");
+});
+
+clientPortalRouter.post('/action/update-client-account-settings', function(request, response){ 
+    console.log("this was called");
+    let new_email_address = request.body.email;
+    let new_password_hash = request.body.newPassword;
+    let new_address = request.body.address;
+    let new_firstName = request.body.firstName;
+    let new_lastName = request.body.lastName;
+    let user_id = request.session.userInfo.userId;
+    if(new_email_address && new_password_hash && new_address && new_firstName && new_lastName){
+      connection.query(
+        'UPDATE users SET email_address = ?, password_hash = ?, address = ?, firstName = ?, lastName = ? WHERE user_id = ?',
+        [new_email_address, new_password_hash, new_address, new_firstName, new_lastName, user_id], 
+        function(error, result, fields){
+            if(error) throw error;
+            if (!error){
+                request.session.destroy(); 
+                response.redirect('/auth/LogIn.html');
+            }
+            else {
+                response.send("An error has ocurred")
+            }
+            response.end;
+        });
+    }
+});
+
 
 
 clientPortalRouter.get(':filename(*)',(req,res) => {

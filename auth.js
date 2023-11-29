@@ -4,6 +4,7 @@ const connection = require('./db');
 
 const authRouter = express.Router();
 
+
 authRouter.post('/login/:auth_type', (request, response) => {
     let email = request.body.email;
     let password = request.body.password;
@@ -29,7 +30,7 @@ authRouter.post('/login/:auth_type', (request, response) => {
     }
 });
 
-authRouter.post('/auth-form/signup', function(request, response){   //Signup form process
+authRouter.post('/signup', function(request, response){   //Signup form process
     let firstname = request.body.firstname
     let lastname = request.body.lastname
     let email = request.body.email;

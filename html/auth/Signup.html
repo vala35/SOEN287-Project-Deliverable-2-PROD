@@ -16,11 +16,9 @@
     <h1>Sign up for an account</h1>
     <main>
         <div class ="Signup">
-            
-            
             <h3>Enter your information below</h3>
 
-            <form action="/auth-form/signup" method="post">
+            <form id="signup-form" action="/auth-form/signup" method="post" onsubmit="return validateForm()">
                 <label for="FName">First Name*</label><br>
                 <input type="text" id="FName" name="firstname" required><br>
                 <label for="LName">Last Name*</label><br>
@@ -33,14 +31,41 @@
                     <label for="AcctType">Provider</label>
                 </div>
                 <label for="email"> Email Address*</label><br>
-                <input type="email" name="email" required><br>
+                <input type="email" name="email" id="email" required><br>
                 <label for="PW">Password*</label><br>
-                <input type="password" name="password" required><br>
+                <input type="password" name="password" id="password" required><br>
                 <label for="PW">Confirm Password*</label><br>
-                <input type="password" name="confirmpassword" required><br><br>
+                <input type="password" name="confirmpassword" id="confirmpassword" required><br><br>
                 <input type="submit" value="Sign up">
             </form>
+           
         </div>
+
+        <script>
+            function validateForm(){
+                let email = document.getElementById("email").value;
+                let password = document.getElementById("password").value;
+                let confirm = document.getElementById('confirmpassword').value;
+                let firstName = document.getElementById('FName').value;
+                let lastName = document.getElementById('LName').value;
+
+                let pwMatch = password == confirm;
+                let pwPolicy = password.length >= 8;
+                let filled = email && password && confirm && firstName && lastName;
+
+                if (pwMatch && pwPolicy && filled){
+                    console.log("yes");
+                    alert("Your account has been created. Please sign in.");
+                   return true;
+                }
+                else{
+                    console.log('no');
+                    alert("Form is invalid. Please make sure everything is filled, passwords match and are at least 8 characters.");
+                    return false;
+                }
+
+            }
+        </script>
 
         <!--  -->
         <div class = "login-prompt">

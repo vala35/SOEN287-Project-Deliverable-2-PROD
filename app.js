@@ -39,7 +39,8 @@ app.use('/provider-portal', providerPortalRouter);
 app.use('/client-portal', clientPortalRouter);
 app.use('/auth-form', authRouter)
 
-app.listen(3000);
+// app.listen(3000);
+app.listen(8080);   //The site only listens on 8080, keep this!
 /*
 var privateKey = fs.readFileSync( 'cert/privkey.pem' );
 var certificate = fs.readFileSync( 'cert/fullchain.pem' );
