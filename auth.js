@@ -58,4 +58,9 @@ authRouter.post('/signup', function(request, response){   //Signup form process
     }
 });
 
+authRouter.get('/logout', function(request, response){
+    request.session.destroy();
+    response.redirect('/');
+});
+
 module.exports = authRouter;
