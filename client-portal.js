@@ -64,6 +64,38 @@ clientPortalRouter.post('/action/renew-license', function(request, response){
     response.redirect("/client-portal/ClientPage.html");
 });
 
+clientPortalRouter.post('/action/add-license', function(request, response) {
+    // Retrieve license details from the request body
+    const { SerialNumber, Software, PurchaseDate, ExpiryDate } = request.body;
+
+    if (!SerialNumber || !Software || !PurchaseDate || !ExpiryDate) {
+        return response.status(400).json({ success: false, error: 'All fields are required' });
+    }
+
+    const serialNumberRegex = /^[a-zA-Z0-9]+$/;
+    if (!serialNumberRegex.test(SerialNumber)) {
+        return response.status(400).json({ success: false, error: 'Serial Number should be alphanumeric' });
+    }
+
+    const dateFormatRegex = /^\d{4}-\d{2}-\d{2}$/; // YYYY-MM-DD format
+    if (!dateFormatRegex.test(PurchaseDate) || !dateFormatRegex.test(ExpiryDate)) {
+        return response.status(400).json({ success: false, error: 'Invalid date format. Use YYYY-MM-DD' });
+    }
+
+    connection.query(
+        'INSERT INTO Licenses (SerialNumber, Software, PurchaseDate, ExpiryDate) VALUES (?, ?, ?, ?)',
+        [SerialNumber, Software, PurchaseDate, ExpiryDate],
+        (error, result) => {
+            if (error) {
+                console.error('Error adding license:', error);
+                return response.status(500).json({success: false, error:'Error adding license'});
+            }
+            console.log('License added successfully');
+            response.status(200).json({success: true, error:'License added successfully'});
+        }
+    );
+});
+
 clientPortalRouter.post('/action/update-client-account-settings', function(request, response){ 
     console.log("this was called");
     let new_email_address = request.body.email;

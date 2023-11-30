@@ -30,7 +30,7 @@
         <div class="body1">
             <h1><br>Add a License<br></h1>
             <br>
-            <form action="ClientPage.html">
+            <form id="addLicenseForm" action="/client-portal/action/add-license" method="POST">
                 <div>
                     <label for="SerialNumber">Serial Number</label>
                     <input type="text" name="SerialNumber" id="SerialNumber" required>
@@ -56,6 +56,27 @@
         </div>
     </div>
 </div>
+    <script>
+        document.getElementById('addLicenseForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevents the default form submission
 
+            const formData = new FormData(this); // Collect form data
+
+            fetch('/client-portal/action/add-license', {
+                method: 'POST',
+                body: formData
+            })
+                .then(response => {
+                    // Handle response or perform actions upon successful addition
+                    console.log('License added successfully');
+                    // Redirect to another page after successful addition
+                    window.location.href = '/client-portal/ClientPage.html';
+                })
+                .catch(error => {
+                    // Handle errors or display an error message
+                    console.error('Error adding license:', error);
+                });
+        });
+    </script>
 </body>
 </html>
