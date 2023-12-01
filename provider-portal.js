@@ -39,7 +39,7 @@ providerPortalRouter.get('/action/getusers',(req, res) => {
 
 
 providerPortalRouter.get('/action/getsoftwarelist', (req, res) => {
-    connection.query('SELECT * FROM Software WHERE 1', (error, result, fields) => {
+    connection.query('SELECT * FROM Software WHERE provider_id = ?',[req.session.userInfo.userId], (error, result, fields) => {
         if (error) throw error;
 
         let softwareList = [];
