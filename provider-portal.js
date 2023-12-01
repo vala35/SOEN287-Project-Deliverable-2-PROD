@@ -24,7 +24,7 @@ const providerPortalAuthCheck = (req, res, next) => {
 providerPortalRouter.use(providerPortalAuthCheck);
 
 providerPortalRouter.get('/action/getusers',(req, res) => {
-    connection.query('SELECT * FROM Users WHERE user_type="client"', (error, result, fields) => {
+    connection.query('SELECT * FROM provider_users_view WHERE provider_id=?',[req.session.userInfo.userId] ,(error, result, fields) => {
         if(error) throw error;
     
         let userList = [];

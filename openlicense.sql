@@ -53,6 +53,21 @@ CREATE VIEW software_users_view AS
 	JOIN LicenseKeys lk ON u.user_id = lk.userID
 	JOIN Software s ON lk.softwareId = s.software_id;
 
+CREATE VIEW provider_users_view AS
+    SELECT 
+        u.user_id
+        u.firstName,
+        u.lastName,
+        u.email_address,
+        u.phone_number,
+        u.status,
+        s.provider_id
+    FROM
+        ((users u
+        JOIN licensekeys lk ON ((u.user_id = lk.userID)))
+        JOIN software s ON ((lk.softwareId = s.software_id)))
+    GROUP BY u.user_id , s.provider_id
+
 
 
 CREATE VIEW software_licensekeys_view AS
