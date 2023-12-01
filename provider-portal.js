@@ -32,7 +32,7 @@ providerPortalRouter.get('/action/getusers',(req, res) => {
         result.forEach(user => {
             userList.push({ user_id: user.user_id, firstName: user.firstName, lastName: user.lastName, email_address: user.email_address })
         });
-
+        
         res.send(userList);
     });
 });
