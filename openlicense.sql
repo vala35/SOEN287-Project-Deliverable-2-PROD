@@ -8,6 +8,7 @@ CREATE TABLE Software(
 	executable_link varchar(32),
 	icon_url varchar(32),
 	price FLOAT(10, 2),
+	provider_id int,
 	
 	PRIMARY KEY(software_id)
 );
