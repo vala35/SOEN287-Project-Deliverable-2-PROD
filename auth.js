@@ -39,7 +39,7 @@ authRouter.post('/signup', function(request, response){   //Signup form process
     console.log(firstname, lastname, email, password, userType);
     if(email && password && firstname && lastname){
       connection.query(
-        'INSERT INTO users (firstName, lastName, email_address, password_hash, user_type) VALUES (?, ?, ?, ?, ?)',
+        'INSERT INTO users (firstName, lastName, email_address, password_hash, user_type, status) VALUES (?, ?, ?, ?, ?, "active")',
         [firstname, lastname, email, password, userType],
         function(error, result, fields){
             if(error) throw error;

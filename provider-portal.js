@@ -37,6 +37,22 @@ providerPortalRouter.get('/action/getusers',(req, res) => {
     });
 });
 
+providerPortalRouter.get('/action/getusers/:user_id',(req, res) => {
+
+    let user_id = req.params.user_id;
+
+    connection.query('SELECT * FROM users WHERE user_id=?',[user_id] ,(error, result, fields) => {
+        if(error) throw error;
+    
+        if(result.length>0){
+            res.send(result[0]);
+        }
+        else{
+            res.send("Invalid userID");
+        }
+
+    });
+});
 
 providerPortalRouter.get('/action/getsoftwarelist', (req, res) => {
     connection.query('SELECT * FROM Software WHERE provider_id = ?',[req.session.userInfo.userId], (error, result, fields) => {
@@ -172,7 +188,6 @@ providerPortalRouter.post('/action/setsoftwareinfo/price', (req, res) => {
 });
 
 providerPortalRouter.post('/action/setsoftwareinfo/updateuser', (req, res) => {
-
     let userId = req.body.userId;
     let firstName = req.body.firstName;
     let lastName = req.body.lastName;
@@ -187,6 +202,29 @@ providerPortalRouter.post('/action/setsoftwareinfo/updateuser', (req, res) => {
     });
 });
 
+providerPortalRouter.post('/action/setuserinfo', (req, res) => {
+    let userId = req.body.userId;
+    let firstName = req.body.firstName;
+    let lastName = req.body.lastName;
+    let emailAddress = req.body.emailAddress;
+    let telephoneNumber = req.body.telephoneNumber;
+    let customer_notes = req.body.customer_notes;
+
+    connection.query('UPDATE Users SET firstName = ?, lastName = ?, email_address = ?, phone_number = ?, customer_notes = ? WHERE user_id = ?',
+        [firstName, lastName, emailAddress, telephoneNumber, customer_notes, userId],
+        (error, result, fields) => {
+            if (error) throw error;
+            console.log(result);
+    });
+});
+
+
+
+
+
+
+
+
 providerPortalRouter.post('/action/addnewkey', (req, res) => {
     let softwareId = req.body.softwareId;
     let license_key = req.body.license_key;
@@ -199,6 +237,32 @@ providerPortalRouter.post('/action/addnewkey', (req, res) => {
             if (error) throw error;
             console.log(result);
     });
+});
+
+providerPortalRouter.post('/action/update-provider-account-settings', function(request, response){ 
+    console.log("this was called");
+    let new_email_address = request.body.email;
+    let new_password_hash = request.body.newPassword;
+    let new_address = request.body.address;
+    let new_firstName = request.body.firstName;
+    let new_lastName = request.body.lastName;
+    let user_id = request.session.userInfo.userId;
+    if(new_email_address && new_password_hash && new_address && new_firstName && new_lastName){
+      connection.query(
+        'UPDATE users SET email_address = ?, password_hash = ?, address = ?, firstName = ?, lastName = ? WHERE user_id = ?',
+        [new_email_address, new_password_hash, new_address, new_firstName, new_lastName, user_id], 
+        function(error, result, fields){
+            if(error) throw error;
+            if (!error){
+                request.session.destroy(); 
+                response.redirect('/auth/Provider-Logn.html');
+            }
+            else {
+                response.send("An error has ocurred")
+            }
+            response.end;
+        });
+    }
 });
 
 
