@@ -326,6 +326,17 @@
             document.getElementById("serialNumTable").style.display = "block";
         }
 
+        function unlinkKey(key){
+            fetch('action/unlinkkey/'+ key, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+            alert("Your changes have been saved.");
+            location.reload();
+        }
+
         function userItem_Edit(softwareId, id) {
 
             currentUserIdSelected = id;
@@ -341,6 +352,7 @@
                     document.getElementById("userSetting_email").value = user.email_address;
                     document.getElementById("userSetting_tel").value = user.phone_number;
                     document.getElementById("userSetting_serialKey").innerHTML = user.license_key;
+                    document.getElementById("userSetting_serialNum").setAttribute('onclick', 'unlinkKey("' + user.license_key + '")');
                 });
 
             document.getElementById("UserTableContainer").style.display = "none";

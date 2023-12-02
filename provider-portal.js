@@ -57,7 +57,6 @@ providerPortalRouter.get('/action/getusers/keys/:user_id',(req, res) => {
 
 
 
-
 providerPortalRouter.get('/action/getusers/:user_id',(req, res) => {
 
     let user_id = req.params.user_id;
@@ -236,6 +235,16 @@ providerPortalRouter.post('/action/setuserinfo', (req, res) => {
         (error, result, fields) => {
             if (error) throw error;
             console.log(result);
+    });
+});
+
+providerPortalRouter.post('/action/unlinkkey/:key', (req, res) => {
+
+    let license_key = req.params.key;
+
+    connection.query('UPDATE licensekeys SET userID = NULL, status = "inactive" WHERE license_key = ?', [license_key], (error, result, fields) => {
+        if (error) throw error;
+        console.log(result);
     });
 });
 

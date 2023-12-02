@@ -98,11 +98,25 @@
                 .then(response => response.json())
                 .then(userKeys => {
                     let tBody="";
+                    
                     userKeys.forEach(key => {
-                        tBody+="<tr>"+key.license_key+"  <button onclick='unlinkKey('"+ key.license_key+")>Unlink</button></tr>";
+                        let onclickProperty = "onclick='unlinkKey(\"" + key.license_key + "\")'";
+                        tBody += "<tr><td>" + key.license_key + "</td><td><button " + onclickProperty + ">Unlink</button></td></tr>";
                     });
                     document.getElementById('userKeysTable').innerHTML = tBody;
                 });
+        }
+
+
+        function unlinkKey(key){
+            fetch('action/unlinkkey/'+ key, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+            alert("Your changes have been saved.");
+            location.reload();
         }
 
 
