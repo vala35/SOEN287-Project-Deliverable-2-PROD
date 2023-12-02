@@ -122,7 +122,7 @@ providerPortalRouter.get('/action/getsoftwareinfo/:softwareId/licensekeys', (req
 
     let softwareId = req.params.softwareId;
 
-    connection.query('SELECT * FROM software_licensekeys_view WHERE software_id = ?',
+    connection.query('SELECT * FROM licensekeys WHERE softwareId = ?',
         [softwareId],
         (error, result, fields) => {
             if (error) throw error;
@@ -143,7 +143,7 @@ providerPortalRouter.get('/action/getsoftwareinfo/:softwareId/licensekey/:licens
     let softwareId = req.params.softwareId;
     let licenseKey = req.params.licenseKey;
 
-    connection.query('SELECT * FROM software_licensekeys_view WHERE software_id = ? AND license_key = ?',
+    connection.query('SELECT * FROM licensekeys WHERE softwareId = ? AND license_key = ?',
         [softwareId, licenseKey],
         (error, result, fields) => {
             if (error) throw error;
@@ -186,6 +186,24 @@ providerPortalRouter.post('/action/setsoftwareinfo/updateuser', (req, res) => {
             console.log(result);
     });
 });
+
+providerPortalRouter.post('/action/addnewkey', (req, res) => {
+    let softwareId = req.body.softwareId;
+    let license_key = req.body.license_key;
+    let status = req.body.status;
+    let creationDate = req.body.creationDate.substring(0,10);
+
+    connection.query('INSERT INTO licensekeys (softwareId, license_key, status, creationDate) VALUES (?, ?, ?, ?)',
+        [softwareId, license_key, status, creationDate],
+        (error, result, fields) => {
+            if (error) throw error;
+            console.log(result);
+    });
+});
+
+
+
+
 
 providerPortalRouter.get('/action/getaccountdetails', (req, res) => {
     connection.query(
