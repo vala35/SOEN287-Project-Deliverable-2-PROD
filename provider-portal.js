@@ -37,6 +37,27 @@ providerPortalRouter.get('/action/getusers',(req, res) => {
     });
 });
 
+providerPortalRouter.get('/action/getusers/keys/:user_id',(req, res) => {
+
+    let user_id = req.params.user_id;
+
+    connection.query('SELECT * FROM software_users_view WHERE provider_id=? AND user_id=?',[req.session.userInfo.userId, user_id] ,(error, result, fields) => {
+        if(error) throw error;
+    
+        let keyList = [];
+
+        result.forEach(key => {
+            keyList.push({license_key: key.license_key })
+        });
+        
+        res.send(keyList);
+    });
+});
+
+
+
+
+
 providerPortalRouter.get('/action/getusers/:user_id',(req, res) => {
 
     let user_id = req.params.user_id;

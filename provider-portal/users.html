@@ -94,7 +94,17 @@
                     document.getElementById("custNotes").value = userInfo.customer_notes;
                     document.getElementById("userName").innerHTML= userInfo.firstName+" "+userInfo.lastName;
                 });
+            fetch('action/getusers/keys/' + id)
+                .then(response => response.json())
+                .then(userKeys => {
+                    let tBody="";
+                    userKeys.forEach(key => {
+                        tBody+="<tr>"+key.license_key+"  <button onclick='unlinkKey('"+ key.license_key+")>Unlink</button></tr>";
+                    });
+                    document.getElementById('userKeysTable').innerHTML = tBody;
+                });
         }
+
 
         function editUserInfo(){
             fetch('action/setuserinfo', {
@@ -114,6 +124,7 @@
             alert("Your changes have been saved.");
             location.reload();
         }
+
 
 
         window.onload = function () {
@@ -225,7 +236,7 @@
                     <input type="button" value="Save Changes" onclick="editUserInfo()"/>
                     <input type="button" value="Discard Changes" onclick="location.reload()" />
                     <input type="button" value="Reset Password" />
-                    <input type="button" value="Temporarily Block Account" />
+                    <input type="button" value="Block Account" />
 
                 </div>
 
@@ -251,18 +262,14 @@
 
 
                 <h3>Products Active</h3>
-                <label>ABCDE-12345-FGHIJ-67890</label>
+                <table>
+                    <tbody id="userKeysTable">
+                    </tbody>
+
+                </table>
+                <!-- <label>ABCDE-12345-FGHIJ-67890</label>
                 <a href="#">Unlink</a>
-                <br />
-                <label>ABCDE-12345-FGHIJ-67890</label>
-                <a href="#">Unlink</a>
-                <br />
-                <label>ABCDE-12345-FGHIJ-67890</label>
-                <a href="#">Unlink</a>
-                <br />
-                <label>ABCDE-12345-FGHIJ-67890</label>
-                <a href="#">Unlink</a>
-                <br />
+                <br /> -->
 
                 <h3>Customer Notes</h3>
                 <textarea style="width: 100%; height: 300px" id="custNotes" placeholder="Keep information relating to the client (internal use only)"></textarea>
