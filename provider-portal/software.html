@@ -428,14 +428,17 @@
                     }
                 }
 
-                let date = new Date().toJSON();
+                let creationDate = new Date().toJSON();
+                let expiryDate = parseInt(creationDate.substring(0,4))+1+creationDate.substring(4);
+
                 fetch('action/addnewkey', {
                 method: "POST",
                 body: JSON.stringify({
                     softwareId: currentSoftwareId,
                     license_key: newKey,
                     status: "inactive",
-                    creationDate: date,
+                    creationDate: creationDate,
+                    expiryDate: expiryDate,
                 }),
                 headers: {
                     "Content-type": "application/json; charset=UTF-8"
@@ -443,7 +446,7 @@
         
             });
             
-            alert("License key "+ newKey+" has been added! Please tell your client to activate it in their portal.");
+            alert("License key "+ newKey+" has been added! The default expiry is one year from the creation date. Please tell your client to activate it in their portal.");
             location.reload();
 
 

@@ -33,7 +33,7 @@
             <form id="addLicenseForm" action="/client-portal/action/add-license" method="POST">
                 <div>
                     <label for="SerialNumber">Serial Number</label>
-                    <input type="text" name="SerialNumber" id="SerialNumber" required>
+                    <input type="text" name="SerialNumber" id="SerialNumber" required placeholder="A1A1A-B1B1B-C1C1C-D1D1D">
                 </div>
                 <br>
                 <div>
@@ -43,12 +43,12 @@
                 <br>
                 <div>
                     <label for="PurchaseDate">Purchase Date</label>
-                    <input type="date" name="PurchaseDate" id="PurchaseDate" required>
+                    <input type="date" name="PurchaseDate" id="PurchaseDate" required placeholder="YYYY-MM-DD">
                 </div>
                 <br>
                 <div>
                     <label for="ExpiryDate">Expiry Date</label>
-                    <input type="date" name="ExpiryDate" id="ExpiryDate" required>
+                    <input type="date" name="ExpiryDate" id="ExpiryDate" required placeholder="YYYY-MM-DD">
                 </div>
                 <br>
                 <input type="button" onclick="add()" value="Add" id="button">
@@ -57,26 +57,25 @@
     </div>
 </div>
     <script>
-        document.getElementById('addLicenseForm').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevents the default form submission
-
-            const formData = new FormData(this); // Collect form data
-
-            fetch('/client-portal/action/add-license', {
-                method: 'POST',
-                body: formData
-            })
-                .then(response => {
-                    // Handle response or perform actions upon successful addition
-                    console.log('License added successfully');
-                    // Redirect to another page after successful addition
-                    window.location.href = '/client-portal/ClientPage.html';
-                })
-                .catch(error => {
-                    // Handle errors or display an error message
-                    console.error('Error adding license:', error);
-                });
+        function add() {
+        fetch('action/add-license', {
+            method: "POST",
+            body: JSON.stringify({
+                SerialNumber: document.getElementById('SerialNumber').value,
+                ExpiryDate: document.getElementById('ExpiryDate').value,
+            }),
+            headers: {
+             "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+          alert(JSON.stringify(data));
+        })
+        .catch(error => {
+           console.error('Error:', error);
         });
+}
     </script>
 </body>
 </html>

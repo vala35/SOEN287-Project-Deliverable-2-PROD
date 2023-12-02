@@ -249,20 +249,15 @@ providerPortalRouter.post('/action/unlinkkey/:key', (req, res) => {
 });
 
 
-
-
-
-
-
-
 providerPortalRouter.post('/action/addnewkey', (req, res) => {
     let softwareId = req.body.softwareId;
     let license_key = req.body.license_key;
     let status = req.body.status;
     let creationDate = req.body.creationDate.substring(0,10);
+    let expiryDate = req.body.expiryDate.substring(0,10);
 
-    connection.query('INSERT INTO licensekeys (softwareId, license_key, status, creationDate) VALUES (?, ?, ?, ?)',
-        [softwareId, license_key, status, creationDate],
+    connection.query('INSERT INTO licensekeys (softwareId, license_key, status, creationDate, expiryDate) VALUES (?, ?, ?, ?, ?)',
+        [softwareId, license_key, status, creationDate, expiryDate],
         (error, result, fields) => {
             if (error) throw error;
             console.log(result);
@@ -294,9 +289,6 @@ providerPortalRouter.post('/action/update-provider-account-settings', function(r
         });
     }
 });
-
-
-
 
 
 providerPortalRouter.get('/action/getaccountdetails', (req, res) => {
