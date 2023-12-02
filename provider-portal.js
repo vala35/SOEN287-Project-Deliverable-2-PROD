@@ -1,6 +1,6 @@
 const path = require('path');
-
-const express = require('express')
+const nodemailer = require('nodemailer');
+const express = require('express');
 const session = require('express-session');
 
 const connection = require('./db');
