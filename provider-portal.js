@@ -280,7 +280,7 @@ providerPortalRouter.post('/action/update-provider-account-settings', function(r
             if(error) throw error;
             if (!error){
                 request.session.destroy(); 
-                response.redirect('/auth/Provider-Logn.html');
+                response.redirect('/auth/Provider-Login.html');
             }
             else {
                 response.send("An error has ocurred")
