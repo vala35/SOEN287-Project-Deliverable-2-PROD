@@ -14,4 +14,4 @@ var log = (text) => {
     });
 };
 
-module.exports = { readLogFile, log };
+module.exports = { readLogFile, log };//test
