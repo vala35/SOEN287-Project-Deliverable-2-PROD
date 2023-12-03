@@ -306,7 +306,7 @@ providerPortalRouter.get(':filename(*)',(req,res) => {
     res.sendFile(path.join(__dirname,'/provider-portal/',req.params.filename));
 });
 
-module.exports = providerPortalRouter;
+
 
 
 const transporter = nodemailer.createTransport({
@@ -315,7 +315,7 @@ const transporter = nodemailer.createTransport({
     secure: false, 
     auth: {
         user: 'oneLicenseDummy@gmail.com',
-        pass: 'ZA!23456b'
+        pass: 'ulfw pcpl hiom hpkf'
     }
 });
 
@@ -348,3 +348,6 @@ providerPortalRouter.post('/action/sendemail', (req, res) => {
             res.send('Emails sent successfully');
         });
 });
+
+
+module.exports = providerPortalRouter;

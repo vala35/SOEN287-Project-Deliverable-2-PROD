@@ -1,8 +1,57 @@
 const express = require('express')
 const session = require('express-session');
 const connection = require('./db');
+const nodemailer = require('nodemailer');
+
 
 const authRouter = express.Router();
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, 
+    auth: {
+        user: 'oneLicenseDummy@gmail.com',
+        pass: 'ulfw pcpl hiom hpkf'
+    }
+});
+
+authRouter.post('/forgotpassword', (request, response) => {
+    let email = request.body.email;
+    let password = request.body.password;
+
+
+    if(email){
+      connection.query(
+        'UPDATE users SET password_hash = ? WHERE email_address = ?',
+        [password, email],
+        function(error, result, fields){
+            if(error) throw error;
+            if (result.changedRows > 0){
+                response.json("Your new password has been sent to your email address");
+                const mailOptions = {
+                    from: 'oneLicenseDummy@gmail.com',
+                    to: email,
+                    subject: "Your new OneLicense Password",
+                    text: "This is your new password: " + password
+                };
+                transporter.sendMail(mailOptions, (emailError, info) => {
+                    if (emailError) {
+                        console.log('Error occurred in sending mail:', emailError);
+                    } else {
+                        console.log('Email sent:', info.response);
+                    }
+                });
+
+                
+            }
+            else {
+                response.json("This email does not exist. Please create an account.");
+            }
+            response.end;
+        });
+    }
+});
 
 
 authRouter.post('/login/:auth_type', (request, response) => {
