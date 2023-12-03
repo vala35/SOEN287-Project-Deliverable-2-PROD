@@ -68,11 +68,12 @@ authRouter.post('/login/:auth_type', (request, response) => {
             if (result.length > 0){
                 console.log(result[0]);
                 request.session.userInfo = { userId: result[0].user_id, firstName: result[0].firstName, lastName: result[0].lastName };
-                console.log(request.session.userInfo );
-                response.redirect(userType == "provider" ? '/provider-portal/provider-dashboard.html' : '/client-portal/ClientPage.html');
+                console.log(request.session.userInfo);
+                // response.redirect(userType == "provider" ? '/provider-portal/provider-dashboard.html' : '/client-portal/ClientPage.html');
+                response.json("success");
             }
             else {
-                response.send("Incorrect Credentials. Please try again");
+                response.json("fail");
             }
             response.end;
         });
