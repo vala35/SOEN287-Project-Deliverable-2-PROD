@@ -237,6 +237,7 @@
                     document.getElementById("softwareVersionNumber").innerHTML = softwareInfo.version_number;
                     document.getElementById("softwarePrice").value = softwareInfo.price;
 		            document.getElementById("hiddenSoftwareId").value = softwareId;
+                    document.getElementById("softwareIcon").src = softwareInfo.icon_url;
 
                     if(softwareInfo.status == 'active'){
                         document.getElementById('pauseAccess').checked = false;
@@ -312,7 +313,7 @@
             fetch('action/getsoftwareinfo/' + softwareId + '/licensekey/' + key)
                 .then(response => response.json())
                 .then(serialKeyInfo => {
-                    if(serialKeyInfo.status == 'inactive'){
+                    if(serialKeyInfo.status == 'inactive' && serialKeyInfo.activationDate==null){
                         alert("This license has not been activated. Please tell your client to add it in their portal.");
                     }
 
@@ -323,8 +324,17 @@
 
 
 
-                    //serialKeyInfo
-
+                    if(serialKeyInfo.activationDate==null){
+                        document.getElementById('pause_license').disabled = true;
+                    } else{
+                        document.getElementById('pause_license').disabled = false;
+                    }
+                    if(serialKeyInfo.activationDate.length != null && serialKeyInfo.status == "inactive"){
+                        document.getElementById('pause_license').disabled = false;
+                        document.getElementById('pause_license').checked = true;
+                    } else{
+                        document.getElementById('pause_license').checked = false;
+                    }
 
 
                 });
@@ -332,6 +342,39 @@
             document.getElementById("serialNumTable").style.display = "none";
             document.getElementById("serialNumberSettings").style.display = "block";
         }
+
+        function serialItem_togglePause(){
+
+            let license_key = document.getElementById("navBackSerialSettings").innerHTML;
+
+            let status ="";
+            if(document.getElementById('pause_license').checked == false){
+                status = "active";
+            } else {
+                status = "inactive";
+            }
+
+            fetch('action/pausekey/'+ license_key, {
+                method: "POST",
+                body: JSON.stringify({
+                    status: status
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+
+            alert("This license key is now " + status);
+            location.reload();
+        }
+
+
+
+
+
+
+
+
         function serialItem_GoBack() {
             document.getElementById("serialNumberSettings").style.display = "None";
             document.getElementById("serialNumTable").style.display = "block";
@@ -597,7 +640,7 @@
 
 
             <div style="display:inline-flex; width:100%;align-items:center;">
-                <img class="softwareIcon" src="../img/microsoft_word.png" />
+                <img class="softwareIcon" id="softwareIcon" src="../img/microsoft_word.png" />
                 <div>
                     <!--<h2 class="AppTitle">Allure</h2>-->
                     <!--<label class="NewAppTitle">Allure</label>-->
@@ -772,8 +815,8 @@
                         <label>Expires: </label> <input type="datetime-local" id="serialKeyExpires"/>
                         <br />
 
-                        <input type="checkbox" id="pause_user" />
-                        <label for="pause_user">License Paused</label>
+                        <input type="checkbox" onclick="serialItem_togglePause()" id="pause_license" />
+                        <label for="pause_license">License Paused</label>
                         <br />
 
                     </div>

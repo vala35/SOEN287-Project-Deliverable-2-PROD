@@ -264,6 +264,20 @@ providerPortalRouter.post('/action/unlinkkey/:key', (req, res) => {
     });
 });
 
+providerPortalRouter.post('/action/pausekey/:key', (req, res) => {
+
+    let license_key = req.params.key;
+    let status = req.body.status;
+
+    connection.query('UPDATE licensekeys SET status = ? WHERE license_key = ?', [status, license_key], (error, result, fields) => {
+        if (error) throw error;
+        console.log(result);
+    });
+});
+
+
+
+
 providerPortalRouter.post('/action/setsoftwareinfo/pause', (req, res) => {
 
     let softwareId = req.body.softwareId;
