@@ -5,6 +5,8 @@
     <title>Provider Login | OneLicense Software Management </title>
     <link rel="stylesheet" href="auth_style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+
 </head>
 
 <body>
@@ -16,14 +18,44 @@
     <main>
         <!-- Simple login form. No action yet -->
         <div class ="Login">
-            <form action="/auth-form/login/provider" method="post">
+            <form onsubmit="return false">
                 <label for="email"> Email Address</label><br>
-                <input type="email" name="email" required><br>
+                <input id="email" type="email" name="email" required><br>
                 <label for="PW">Password</label><br>
-                <input type="password" name="password" required><br><br>
-                <input type="submit" value="Log in">
+                <input id="password" type="password" name="password" required><br><br>
+                <input type="submit" onclick="login()" value="Log in">
             </form>
         </div>
+
+        <script>
+            function login(){
+                fetch('/auth-form/login/provider', {
+                        method: "POST",
+                        body: JSON.stringify({
+                            email: document.getElementById('email').value,
+                            password: document.getElementById('password').value,
+                        }),
+                        headers: {
+                        "Content-type": "application/json; charset=UTF-8"
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data == "success"){
+                            alert("Welcome back!");
+                            window.location.replace("/provider-portal/provider-dashboard.html");
+                        }
+                        else{
+                            alert("Incorrect credentials! Please try again.");
+                        }
+                    })
+                    .catch(error => {
+                         console.error('Error:', error);
+                    });
+            }
+        </script>
+
+
 
         <div class ="ResetPasswordPrompt">
                 <!-- Make this a link in the future. 

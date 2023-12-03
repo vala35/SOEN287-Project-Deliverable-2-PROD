@@ -7,12 +7,14 @@
 	<title>Account Settings | Provider Portal | OneLicense Software Management </title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="provider-style.css">
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+
     <script type="text/javascript" src="script.js"></script>
 
 
     <script>
 
-        fetch('action/getaccountdetails')
+            fetch('action/getaccountdetails')
             .then(response => response.json())
             .then(user => {
 
@@ -21,6 +23,19 @@
                 document.getElementById("email").value = user.email_address;
                 document.getElementById("address").value = user.address;
             });
+
+            function validateAcctSettings(){
+                    let oldPassword = document.getElementById('oldPassword').value;
+                    let newPassword = document.getElementById('newPassword').value;
+                    let confirmPass = document.getElementById('ConfirmPass').value;
+                    if ((newPassword == confirmPass)){
+                        alert("Your account settings have been changed. Please sign in again.");
+                        return true;
+                    } else{
+                        alert("Your passwords do not match. Please confirm that they are correct and try again.");
+                        return false;
+                    }
+             }
 
 
     </script>
@@ -39,7 +54,7 @@
         <!--<img alt="logo" />-->
 
         <div class="LogoContainer">
-            <a href="/index.html"> <span class="dot"></span>  </a>
+            <a href="provider-dashboard.html"> <span class="dot"></span>  </a>
         </div>
 
 
@@ -48,7 +63,7 @@
             <li class="SidebarItem" onclick="window.location.href = 'software.html';">Software</li>
             <li class="SidebarItem" onclick="window.location.href = 'users.html';">Users</li>
             <li class="SidebarItem" onclick="window.location.href = 'account-settings.html';">Account Settings</li>
-            <li class="SidebarItem" onclick="window.location.href = '/index.html';">Log Out</li>
+            <li class="SidebarItem" onclick="window.location.href = '/auth-form/logout';">Log Out</li>
 
         </ul>
 
@@ -64,21 +79,22 @@
             <div class="general-section">
                 <h3>General<br></h3>
                 <br>
+                <form action="action/update-provider-account-settings" method="post" onsubmit="return validateAcctSettings()">
                 <div>
                     <label for="email">Email</label><br>
-                    <input type="email" name="email" id="email" value="user@example.com">
+                    <input type="email" name="email" id="email" value=" " required>
                 </div>
                 <div>
                     <label for="address">Address</label><br>
-                    <input type="text" name="address" id="address" value="123 Street, City, Country">
+                    <input type="text" name="address" id="address" value=" " required>
                 </div>
                 <div>
                     <label for="name">First Name</label><br>
-                    <input type="text" name="name" id="name" value="John">
+                    <input type="text" name="firstName" id="name" value=" " required>
                 </div>
                 <div>
                     <label for="lastName">Last Name</label><br>
-                    <input type="text" name="lastName" id="lastName" value="Doe">
+                    <input type="text" name="lastName" id="lastName" value=" " required>
                 </div>
             </div>
             <div class="password-section">
@@ -86,19 +102,21 @@
                 <br>
                 <div>
                     <label for="oldPassword">Old Password</label><br>
-                    <input type="password" name="oldPassword" id="oldPassword">
+                    <input type="password" name="oldPassword" id="oldPassword" required>
                 </div>
                 <div>
                     <label for="newPassword">New Password</label><br>
-                    <input type="password" name="newPassword" id="newPassword">
+                    <input type="password" name="newPassword" id="newPassword" required>
                 </div>
                 <div>
                     <label for="ConfirmPass">Confirm New Password</label><br>
-                    <input type="password" name="ConfirmPass" id="ConfirmPass">
+                    <input type="password" name="ConfirmPass" id="ConfirmPass" required>
                 </div>
             </div>
+            <input type="submit" value="Edit" id="button">
+            </form>
 
-           <button id="button">Edit</button> 
+           
         </div>
 
         

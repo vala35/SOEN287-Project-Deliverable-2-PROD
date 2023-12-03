@@ -8,6 +8,8 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="provider-style.css">
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+
 
     <style>
         table.SoftwareListTable {
@@ -234,6 +236,20 @@
                     document.getElementById("currentAppTitle").innerHTML = ' ' + softwareInfo.name + ' (' + softwareInfo.version_number + ')';
                     document.getElementById("softwareVersionNumber").innerHTML = softwareInfo.version_number;
                     document.getElementById("softwarePrice").value = softwareInfo.price;
+		            document.getElementById("hiddenSoftwareId").value = softwareId;
+                    document.getElementById("softwareIcon").src = softwareInfo.icon_url;
+
+                    if(softwareInfo.status == 'active'){
+                        document.getElementById('pauseAccess').checked = false;
+                    } else{
+                        document.getElementById('pauseAccess').checked = true;
+                    }
+
+                    if(softwareInfo.name =="Placeholder"){
+                        alert("You have recently added this software to your account. Please change the default name and price.");
+                    }
+
+
                 });
             fetch('action/getsoftwareinfo/' + softwareId + '/users')
                 .then(response => response.json())
@@ -301,7 +317,9 @@
             fetch('action/getsoftwareinfo/' + softwareId + '/licensekey/' + key)
                 .then(response => response.json())
                 .then(serialKeyInfo => {
-
+                    if(serialKeyInfo.status == 'inactive' && serialKeyInfo.activationDate==null){
+                        alert("This license has not been activated. Please tell your client to add it in their portal.");
+                    }
 
                     document.getElementById("serialKeyStatus").innerHTML = '<b>' + serialKeyInfo.status + '</b>';
                     document.getElementById("serialKeyCreated").innerHTML = serialKeyInfo.creationDate.substring(0, 16);
@@ -309,8 +327,18 @@
                     document.getElementById("serialKeyExpires").value = serialKeyInfo.expiryDate.substring(0, 16);
 
 
-                    //serialKeyInfo
 
+                    if(serialKeyInfo.activationDate==null){
+                        document.getElementById('pause_license').disabled = true;
+                    } else{
+                        document.getElementById('pause_license').disabled = false;
+                    }
+                    if(serialKeyInfo.activationDate.length != null && serialKeyInfo.status == "inactive"){
+                        document.getElementById('pause_license').disabled = false;
+                        document.getElementById('pause_license').checked = true;
+                    } else{
+                        document.getElementById('pause_license').checked = false;
+                    }
 
 
                 });
@@ -318,9 +346,46 @@
             document.getElementById("serialNumTable").style.display = "none";
             document.getElementById("serialNumberSettings").style.display = "block";
         }
+
+        function serialItem_togglePause(){
+
+            let license_key = document.getElementById("navBackSerialSettings").innerHTML;
+
+            let status ="";
+            if(document.getElementById('pause_license').checked == false){
+                status = "active";
+            } else {
+                status = "inactive";
+            }
+
+            fetch('action/pausekey/'+ license_key, {
+                method: "POST",
+                body: JSON.stringify({
+                    status: status
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+
+            alert("This license key is now " + status);
+            location.reload();
+        }
+
         function serialItem_GoBack() {
             document.getElementById("serialNumberSettings").style.display = "None";
             document.getElementById("serialNumTable").style.display = "block";
+        }
+
+        function unlinkKey(key){
+            fetch('action/unlinkkey/'+ key, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+            alert("Your changes have been saved.");
+            location.reload();
         }
 
         function userItem_Edit(softwareId, id) {
@@ -338,6 +403,14 @@
                     document.getElementById("userSetting_email").value = user.email_address;
                     document.getElementById("userSetting_tel").value = user.phone_number;
                     document.getElementById("userSetting_serialKey").innerHTML = user.license_key;
+
+                    if (user.status == 'active'){
+                        document.getElementById("suspendAccount").value = "Suspend Account";
+                    } else{
+                        document.getElementById("suspendAccount").value = "Reactivate Account";
+                    }
+
+                    document.getElementById("userSetting_serialNum").setAttribute('onclick', 'unlinkKey("' + user.license_key + '")');
                 });
 
             document.getElementById("UserTableContainer").style.display = "none";
@@ -380,6 +453,49 @@
             });
         }
 
+        function appSetting_setName()
+        {
+            let newName = document.getElementById("softwareNameTitle").value;
+            fetch('action/setsoftwareinfo/name', {
+                method: "POST",
+                body: JSON.stringify({
+                    softwareId: currentSoftwareId,
+                    name: newName
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+            alert("Your software is now named " + newName +"!");
+            location.reload();
+        }
+
+
+        function appSetting_pauseLicenses(){
+            let status ="";
+            if(document.getElementById('pauseAccess').checked == true){
+                status = "inactive";
+            } else {
+                status = "active";
+            }
+
+            fetch('action/setsoftwareinfo/pause', {
+                method: "POST",
+                body: JSON.stringify({
+                    softwareId: currentSoftwareId,
+                    status: status
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+
+            alert("This software is now " + status);
+            location.reload();
+        }
+
+
+
 
         function appSetting_updateUser()
         {
@@ -398,6 +514,68 @@
             });
         }
 
+        function appSetting_toggleStatus(){
+            let status ="";
+            if (document.getElementById("suspendAccount").value == "Suspend Account"){
+                status = 'inactive';
+            } else {
+                status = 'active';
+            }
+
+            fetch('action/toggleaccountstatus', {
+                method: "POST",
+                body: JSON.stringify({
+                    userId: currentUserIdSelected,
+                    status: status
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+
+            alert("This user's account is now " + status);
+            location.reload();
+        }
+
+
+        function addNewKey(){
+                // variable for software id is 'currentSoftwareId'
+                let usableChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+                let seperator = "-";
+                let newKey = "";
+
+                for(let i = 1; i<=23; i++){
+                    if(i%6==0){
+                        newKey+="-";
+                    }else{
+                       newKey += usableChars.charAt(Math.floor(Math.random() * 36)); 
+                    }
+                }
+
+                let creationDate = new Date().toJSON();
+                let expiryDate = parseInt(creationDate.substring(0,4))+1+creationDate.substring(4);
+
+                fetch('action/addnewkey', {
+                method: "POST",
+                body: JSON.stringify({
+                    softwareId: currentSoftwareId,
+                    license_key: newKey,
+                    status: "inactive",
+                    creationDate: creationDate,
+                    expiryDate: expiryDate,
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+        
+            });
+            
+            alert("License key "+ newKey+" has been added! The default expiry is one year from the creation date. Please tell your client to activate it in their portal.");
+            location.reload();
+
+
+           }
+
 
     </script>
 
@@ -414,7 +592,7 @@
     <div class="sidebar" id="sidebar">
 
         <div class="LogoContainer">
-            <a href="../index.html"> <span class="dot"></span>  </a>
+            <a href="provider-dashboard.html"> <span class="dot"></span>  </a>
         </div>
 
 
@@ -423,7 +601,7 @@
             <li class="SidebarItem" onclick="window.location.href = 'software.html';">Software</li>
             <li class="SidebarItem" onclick="window.location.href = 'users.html';">Users</li>
             <li class="SidebarItem" onclick="window.location.href = 'account-settings.html';">Account Settings</li>
-            <li class="SidebarItem" onclick="window.location.href = '../index.html';">Log Out</li>
+            <li class="SidebarItem" onclick="window.location.href = '/auth-form/logout';">Log Out</li>
 
         </ul>
 
@@ -434,6 +612,7 @@
     <div id="SoftwareListPage" class="MainContent">
 
         <h2>Software List</h2>
+        <a href="action/newsoftware">Create New</a><br><br>
 
         <table id="SoftwareList" class="SoftwareListTable">
 
@@ -476,14 +655,14 @@
 
 
             <div style="display:inline-flex; width:100%;align-items:center;">
-                <img class="softwareIcon" src="../img/microsoft_word.png" />
+                <img class="softwareIcon" id="softwareIcon" src="../img/microsoft_word.png" />
                 <div>
                     <!--<h2 class="AppTitle">Allure</h2>-->
                     <!--<label class="NewAppTitle">Allure</label>-->
-                    <input type="text" class="NewAppTitle" id="softwareNameTitle" value="" onfocus="document.getElementById('editTitleControls').style.display='inline';" onfocusout="document.getElementById('editTitleControls').style.display='none';" />
+                    <input type="text" class="NewAppTitle" id="softwareNameTitle" value="" onfocus="document.getElementById('editTitleControls').style.display='inline';"/>
                     <div style="display:none" id="editTitleControls">
-                        <i class="material-icons done">done</i>
-                        <i class="material-icons cancel">close</i>
+                        <i class="material-icons done" onclick="appSetting_setName()">done</i>
+                        <i class="material-icons cancel" onclick="document.getElementById('editTitleControls').style.display='none';" >close</i>
                     </div>
                     <br />
                     <label id="softwareVersionNumber">0</label>
@@ -512,7 +691,7 @@
 
                 <h4>Misc. Settings</h4>
 
-                <input type="checkbox" id="pauseAccess" />
+                <input type="checkbox" id="pauseAccess" onclick="appSetting_pauseLicenses()"/>
                 <label for="pauseAccess">Temporarily Block ALL Licenses</label>
 
             </div>
@@ -521,8 +700,7 @@
             <div class="InnerTabContent" id="appUserList">
                 <div id="UserTableContainer">
 
-                    <input class="SearchTextbox" type="text" placeholder="Search Name, Email" />
-                    <br />
+
 
                     <div class="TableContainer">
                         <table class="UserTable">
@@ -581,8 +759,7 @@
 
                         <input type="button" value="Save Changes" onclick="appSetting_updateUser()" />
 
-                        <input type="button" value="Reset Password" />
-                        <input type="button" value="Suspend Account" />
+                        <input type="button" id="suspendAccount" onclick="appSetting_toggleStatus()" value="Suspend Account" />
 
                     </div>
 
@@ -603,7 +780,7 @@
                             <label id="totalLicenseKeys"></label>
                         </div>
                         <div style="width:50%;">
-                            <i class="material-icons BackButton" style="float:right;">add</i>
+                            <i class="material-icons BackButton" style="float:right;" onclick="addNewKey()">add</i>
                         </div>
 
                     </div>
@@ -612,8 +789,7 @@
                     <br />
                     <br />
 
-                    <input type="text" class="SearchTextbox" placeholder="Search for serial number." />
-                    <br />
+
                     <div class="TableContainer">
                         <table class="serialNumTable">
                             <thead>
@@ -634,10 +810,12 @@
 
                     <div style="display: inline-flex;">
                         <i class="material-icons BackButton" onclick="serialItem_GoBack()">arrow_back_ios_new</i>
-                        <label style="font-weight: bold" id="navBackSerialSettings"></label>
+                        <label style="font-weight: bold" id="backLabel"></label>
                     </div>
 
                     <div style="padding: 0 1em 0 1em; background-color:white;">
+                        
+                        <p id="navBackSerialSettings"></p>
                         <label>Status:</label>
                         <label id="serialKeyStatus"></label>
                         <br />
@@ -650,10 +828,9 @@
                         <label>Expires: </label> <input type="datetime-local" id="serialKeyExpires"/>
                         <br />
 
-                        <input type="checkbox" id="pause_user" />
-                        <label for="pause_user">License Paused</label>
+                        <input type="checkbox" onclick="serialItem_togglePause()" id="pause_license" />
+                        <label for="pause_license">License Paused</label>
                         <br />
-                        <a href="#">Unlink license from user</a>
 
                     </div>
 
@@ -666,11 +843,14 @@
 
                 <h4>Send an E-Mail to All Users</h4>
 
-                <input class="emailSubject" type="text" placeholder="Subject Line">
-                <br /> <br />
-                <textarea style="width: 100%;height:400px;" placeholder="Email Body"></textarea>
-                <br />
-                <input type="button" value="Send" />
+                <form id="emailForm" action="action/sendemail" method="post">
+                    <input class="emailSubject" type="text" name="subject" id="emailSubject" placeholder="Subject Line">
+                    <br /> <br />
+                    <textarea name="body" id="emailBody" style="width: 100%;height:400px;" placeholder="Email Body"></textarea>
+                    <br />
+                    <input type="hidden" name="softwareId" id="hiddenSoftwareId">
+                    <input type="submit" value="Send" />
+                </form>
 
 
             </div>

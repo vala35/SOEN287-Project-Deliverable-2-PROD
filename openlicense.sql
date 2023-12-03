@@ -1,93 +1,121 @@
-/* Start of table structure setup */
-
-CREATE TABLE Software(
-	software_id int NOT NULL AUTO_INCREMENT,
-	name varchar(32) NOT NULL,
-	status varchar(32),
-	version_number varchar(16),
-	executable_link varchar(32),
-	icon_url varchar(32),
-	price FLOAT(10, 2),
-	
-	PRIMARY KEY(software_id)
-);
-
-CREATE TABLE Users(
-	user_id int NOT NULL AUTO_INCREMENT,
-	firstName varchar(255) NOT NULL,
-	lastName varchar(255) NOT NULL,
-	email_address varchar(64),
-	phone_number varchar(16),
-	address varchar(100),
-	password_hash varchar(255) NOT NULL,
-	user_type ENUM('provider','client') NOT NULL,
-	status varchar(32),
-	customer_notes TEXT,
-	
-	PRIMARY KEY(user_id)
-);
-
-CREATE TABLE LicenseKeys(
-	license_key varchar(32),
-	softwareId int NULL,
-	status varchar(32),
-	creationDate DATE,
-	activationDate DATE,
-	expiryDate DATE,
-	userID int NULL,
-	
-	PRIMARY KEY(license_key),
-	FOREIGN KEY(userId) REFERENCES Users(user_id),
-	FOREIGN KEY(softwareId) REFERENCES Software(software_id),
-	
-	CONSTRAINT OneKeyPerUserPerSoftware UNIQUE(softwareId, userID)
-	
-);
+CREATE TABLE `users` (
+  `user_id` int NOT NULL AUTO_INCREMENT,
+  `firstName` varchar(255) NOT NULL,
+  `lastName` varchar(255) NOT NULL,
+  `email_address` varchar(64) DEFAULT NULL,
+  `phone_number` varchar(16) DEFAULT NULL,
+  `address` varchar(100) DEFAULT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `user_type` enum('provider','client') NOT NULL,
+  `status` varchar(32) DEFAULT NULL,
+  `customer_notes` text,
+  PRIMARY KEY (`user_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-
-CREATE VIEW software_users_view AS
-	SELECT u.user_id, u.firstName, u.lastName, u.email_address, u.phone_number, u.status, s.software_id, lk.license_key
-		FROM Users u
-	JOIN LicenseKeys lk ON u.user_id = lk.userID
-	JOIN Software s ON lk.softwareId = s.software_id;
-
-
-
-CREATE VIEW software_licensekeys_view AS
-	SELECT lk.license_key, lk.status, lk.creationDate, lk.activationDate, lk.expiryDate, u.user_id, s.software_id
-		FROM LicenseKeys lk
-	JOIN Users u ON u.user_id = lk.userID
-	JOIN Software s ON lk.softwareId = s.software_id;
-
-	#CREATE VIEW software_licensekeys_view AS SELECT lk.license_key, lk.status, lk.creationDate, lk.activationDate, lk.expiryDate, u.user_id, s.software_id FROM LicenseKeys lk JOIN Users u ON u.user_id = lk.userID JOIN Software s ON lk.softwareId = s.software_id;
-
-/* End of table structure setup */
+CREATE TABLE `software` (
+  `software_id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(32) NOT NULL,
+  `status` varchar(32) DEFAULT NULL,
+  `version_number` varchar(16) DEFAULT NULL,
+  `executable_link` varchar(32) DEFAULT NULL,
+  `icon_url` varchar(32) DEFAULT NULL,
+  `price` float(10,2) DEFAULT NULL,
+  `provider_id` int DEFAULT NULL,
+  PRIMARY KEY (`software_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-
-/* Start of sample data insertion */
-
-INSERT INTO Users (user_id, firstName, lastName, email_address, phone_number, address, password_hash, status, customer_notes) VALUES
-(1, 'Paul', 'Hatz', 'paul@hatz.dev', '123456789', '123 abc st.', 'gg', 'active', NULL),
-(2, 'John', 'Smith', 'john@hatz.dev', '1234560000', NULL, 'gg', 'active', NULL),
-(3, 'Bruce', 'Smith', 'bruce@hatz.dev', '5559920', NULL, 'glgrepl;kfe', 'active', NULL);
-
-
-INSERT INTO Software (software_id, name, status, version_number, executable_link, price) VALUES
-(1, 'Allure', 'active', '1.0.0', '/assets/download.exe', 14.99),
-(2, 'Cronos', 'active', '1.0.1', 'hh.exe', 10.99),
-(3, 'Accel', 'active', '1.5.6', 'e.exe', 99.99);
-
-
-INSERT INTO LicenseKeys (license_key, softwareId, status, creationDate, activationDate, expiryDate, userID) VALUES
-('12345-ABCDE-67890-FGHIJ', 1, 'active', '2023-11-23', NULL, '2023-11-30', 1),
-('12345-KLMNO-67890-FGHIJ', 2, NULL, NULL, NULL, NULL, 1),
-('VWXYZ-KLMNO-67890-FGHIJ', 1, NULL, NULL, NULL, NULL, 3);
+CREATE TABLE `licensekeys` (
+  `license_key` varchar(32) NOT NULL,
+  `softwareId` int DEFAULT NULL,
+  `status` varchar(32) DEFAULT NULL,
+  `creationDate` date DEFAULT NULL,
+  `activationDate` date DEFAULT NULL,
+  `expiryDate` date DEFAULT NULL,
+  `userID` int DEFAULT NULL,
+  PRIMARY KEY (`license_key`),
+  UNIQUE KEY `OneKeyPerUserPerSoftware` (`softwareId`,`userID`),
+  KEY `userID` (`userID`),
+  CONSTRAINT `licensekeys_ibfk_1` FOREIGN KEY (`userID`) REFERENCES `users` (`user_id`),
+  CONSTRAINT `licensekeys_ibfk_2` FOREIGN KEY (`softwareId`) REFERENCES `software` (`software_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
-/* End of sample data insertion */
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `soenproj`@`%` 
+    SQL SECURITY DEFINER
+VIEW `clientlicenses` AS
+    SELECT 
+        `licensekeys`.`license_key` AS `license_key`,
+        `licensekeys`.`softwareId` AS `softwareId`,
+        `licensekeys`.`status` AS `status`,
+        `licensekeys`.`activationDate` AS `activationDate`,
+        `licensekeys`.`expiryDate` AS `expiryDate`,
+        `licensekeys`.`userID` AS `userID`,
+        `software`.`name` AS `softwareName`
+    FROM
+        (`licensekeys`
+        LEFT JOIN `software` ON ((`licensekeys`.`softwareId` = `software`.`software_id`)))
+    WHERE
+        (`licensekeys`.`status` = 'active')
+
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `soenproj`@`%` 
+    SQL SECURITY DEFINER
+VIEW `provider_users_view` AS
+    SELECT 
+        `u`.`user_id` AS `user_id`,
+        `u`.`firstName` AS `firstName`,
+        `u`.`lastName` AS `lastName`,
+        `u`.`email_address` AS `email_address`,
+        `u`.`phone_number` AS `phone_number`,
+        `u`.`status` AS `status`,
+        `s`.`provider_id` AS `provider_id`
+    FROM
+        ((`users` `u`
+        JOIN `licensekeys` `lk` ON ((`u`.`user_id` = `lk`.`userID`)))
+        JOIN `software` `s` ON ((`lk`.`softwareId` = `s`.`software_id`)))
+    GROUP BY `u`.`user_id` , `s`.`provider_id`
 
 
-/*SELECT * FROM software_users_view 
-	WHERE software_id = x*/
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `soenproj`@`%` 
+    SQL SECURITY DEFINER
+VIEW `software_licensekeys_view` AS
+    SELECT 
+        `lk`.`license_key` AS `license_key`,
+        `lk`.`status` AS `status`,
+        `lk`.`creationDate` AS `creationDate`,
+        `lk`.`activationDate` AS `activationDate`,
+        `lk`.`expiryDate` AS `expiryDate`,
+        `u`.`user_id` AS `user_id`,
+        `s`.`software_id` AS `software_id`
+    FROM
+        ((`licensekeys` `lk`
+        JOIN `users` `u` ON ((`u`.`user_id` = `lk`.`userID`)))
+        JOIN `software` `s` ON ((`lk`.`softwareId` = `s`.`software_id`)))
+
+
+CREATE 
+    ALGORITHM = UNDEFINED 
+    DEFINER = `soenproj`@`%` 
+    SQL SECURITY DEFINER
+VIEW `software_users_view` AS
+    SELECT 
+        `u`.`user_id` AS `user_id`,
+        `u`.`firstName` AS `firstName`,
+        `u`.`lastName` AS `lastName`,
+        `u`.`email_address` AS `email_address`,
+        `u`.`phone_number` AS `phone_number`,
+        `u`.`status` AS `status`,
+        `s`.`software_id` AS `software_id`,
+        `s`.`provider_id` AS `provider_id`,
+        `lk`.`license_key` AS `license_key`
+    FROM
+        ((`users` `u`
+        JOIN `licensekeys` `lk` ON ((`u`.`user_id` = `lk`.`userID`)))
+        JOIN `software` `s` ON ((`lk`.`softwareId` = `s`.`software_id`)))

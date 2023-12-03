@@ -64,6 +64,29 @@ clientPortalRouter.post('/action/renew-license', function(request, response){
     response.redirect("/client-portal/ClientPage.html");
 });
 
+clientPortalRouter.post('/action/add-license', function(request, response) {
+    // Retrieve license details from the request body
+    const { SerialNumber, Software, PurchaseDate, ExpiryDate } = request.body;
+    console.log(request.body);
+    connection.query(
+        'UPDATE licensekeys SET status = "active", userID = ?, activationDate = CURDATE()  WHERE license_key = ? AND expiryDate = DATE(?)',
+        [request.session.userInfo.userId, SerialNumber, ExpiryDate],
+        function(error, result, fields){
+            console.log(result.changedRows);
+            if(error) throw error;
+            if (result.changedRows>0){ 
+                message = 'License activated!';
+                response.json(message);
+            }
+            else {
+                message = "An error has ocurred. Please make sure all fields are correct. Contact the key provider for more information."
+                response.json(message);
+            }
+            response.end;
+        });
+
+});
+
 clientPortalRouter.post('/action/update-client-account-settings', function(request, response){ 
     console.log("this was called");
     let new_email_address = request.body.email;

@@ -8,6 +8,8 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="provider-style.css">
+    <link rel="icon" href="/img/favicon.ico" type="image/x-icon">
+
 
     <script type="text/javascript" src="script.js"></script>
 
@@ -62,7 +64,7 @@
     </style>
 
     <script>
-
+        var currentUserId = 0;
         function userItem_Edit() {
             document.getElementById("UserTableContainer").style.display = "none";
             document.getElementById("UserSettinsContainer").style.display = "block";
@@ -82,6 +84,73 @@
             }
         }
 
+        function getUserInfo(id){
+            currentUserId = id;
+            fetch('action/getusers/' + id)
+                .then(response => response.json())
+                .then(userInfo => {
+                    document.getElementById("userSetting_fName").value = userInfo.firstName;
+                    document.getElementById("userSetting_lName").value = userInfo.lastName;
+                    document.getElementById("userSetting_email").value = userInfo.email_address;
+                    document.getElementById("userSetting_tel").value = userInfo.phone_number;
+                    document.getElementById("custNotes").value = userInfo.customer_notes;
+                    document.getElementById("userName").innerHTML= userInfo.firstName+" "+userInfo.lastName + "<b> ("+userInfo.status+")</b>";
+
+                    if (userInfo.status == 'active'){
+                        document.getElementById("suspendAccount").value = "Suspend Account";
+                    } else{
+                        document.getElementById("suspendAccount").value = "Reactivate Account";
+                    }
+
+
+                });
+            fetch('action/getusers/keys/' + id)
+                .then(response => response.json())
+                .then(userKeys => {
+                    let tBody="";
+                    
+                    userKeys.forEach(key => {
+                        let onclickProperty = "onclick='unlinkKey(\"" + key.license_key + "\")'";
+                        tBody += "<tr><td>" + key.license_key + "</td><td><button " + onclickProperty + ">Unlink</button></td></tr>";
+                    });
+                    document.getElementById('userKeysTable').innerHTML = tBody;
+                });
+        }
+
+
+        function unlinkKey(key){
+            fetch('action/unlinkkey/'+ key, {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+            alert("Your changes have been saved.");
+            location.reload();
+        }
+
+
+        function editUserInfo(){
+            fetch('action/setuserinfo', {
+                method: "POST",
+                body: JSON.stringify({
+                    userId: currentUserId,
+                    firstName: document.getElementById("userSetting_fName").value,
+                    lastName: document.getElementById("userSetting_lName").value,
+                    emailAddress: document.getElementById("userSetting_email").value,
+                    telephoneNumber: document.getElementById("userSetting_tel").value,
+                    customer_notes: document.getElementById("custNotes").value,
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+            alert("Your changes have been saved.");
+            location.reload();
+        }
+
+
+
         window.onload = function () {
             const xhr = new XMLHttpRequest();
             xhr.open("GET", "action/getusers");
@@ -94,7 +163,7 @@
                 var body = "";
 
                 xhr.response.forEach(user => {
-                    body += '<tr class="UserItem"><td>' + user.firstName + '</td><td>' + user.lastName + '</td><td>' + user.email_address + '</td></tr>';
+                    body += '<tr class="UserItem" onclick=getUserInfo('+user.user_id+') ><td>' + user.firstName + '</td><td>' + user.lastName + '</td><td>' + user.email_address + '</td></tr>';
                 });
 
                 document.getElementById("UserTableBody").innerHTML = body;
@@ -107,6 +176,34 @@
             }
             };
         };
+
+        function toggleStatus(){
+            let status ="";
+            if (document.getElementById("suspendAccount").value == "Suspend Account"){
+                status = 'inactive';
+            } else {
+                status = 'active';
+            }
+
+            fetch('action/toggleaccountstatus', {
+                method: "POST",
+                body: JSON.stringify({
+                    userId: currentUserId,
+                    status: status
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+
+            alert("This user's account is now " + status);
+            location.reload();
+        }
+
+
+
+
+
 
 
     </script>
@@ -126,7 +223,7 @@
     <div class="sidebar" id="sidebar">
         <!--<img alt="logo" />-->
         <div class="LogoContainer">
-            <a href="../index.html"> <span class="dot"></span>  </a>
+            <a href="provider-dashboard.html"> <span class="dot"></span>  </a>
         </div>
 
 
@@ -135,7 +232,7 @@
             <li class="SidebarItem" onclick="window.location.href = 'software.html';">Software</li>
             <li class="SidebarItem" onclick="window.location.href = 'users.html';">Users</li>
             <li class="SidebarItem" onclick="window.location.href = 'account-settings.html';">Account Settings</li>
-            <li class="SidebarItem" onclick="window.location.href = '../index.html';">Log Out</li>
+            <li class="SidebarItem" onclick="window.location.href = '/auth-form/logout';">Log Out</li>
 
         </ul>
 
@@ -148,12 +245,7 @@
         <div class="SectionContainer" id="UserTableContainer">
 
             <h3 style="margin-bottom:2px">Users</h3>
-            <a href="#">Create</a>
             <br /><br />
-            <input class="SearchBar" placeholder="Search for first name, last name, e-mail" />
-
-            <br /><br />
-
 
             <table class="UserTable">
                 <thead>
@@ -174,7 +266,7 @@
         <div class="SectionContainer" id="UserSettinsContainer">
             <div style="display: inline-flex">
                 <i class="material-icons BackButton" onclick="userItem_GoBack()">arrow_back_ios_new</i>
-                <label>Paul Hatz</label>
+                <label id="userName">Paul Hatz</label>
             </div>
             
            
@@ -182,10 +274,9 @@
 
                 <div >
 
-                    <input type="button" value="Save Changes" />
-                    <input type="button" value="Discard Changes" />
-                    <input type="button" value="Reset Password" />
-                    <input type="button" value="Temporarily Block Account" />
+                    <input type="button" value="Save Changes" onclick="editUserInfo()"/>
+                    <input type="button" value="Discard Changes" onclick="location.reload()" />
+                    <input type="button" id="suspendAccount" onclick="toggleStatus()" value="Suspend Account" />
 
                 </div>
 
@@ -193,39 +284,35 @@
 
                 <h4>Name</h4>
                 <label for="userSetting_fName">First Name:</label>
-                <input type="text" id="userSetting_fName" value="Paul" />
+                <input type="text" id="userSetting_fName" value="-" />
 
                 <br />
 
                 <label for="userSetting_lName">Last Name:</label>
-                <input type="text" id="userSetting_lName" value="Hatz" />
+                <input type="text" id="userSetting_lName" value="-" />
 
 
                 <h4>Contact Information</h4>
                 <label for="userSetting_email">Email:</label>
-                <input type="email" id="userSetting_email" value="paul@example.com" />
+                <input type="email" id="userSetting_email" value="-" />
 
                 <br />
                 <label for="userSetting_tel">Phone Number:</label>
-                <input type="email" id="userSetting_tel" value="(438) 555-1004" />
+                <input type="email" id="userSetting_tel" value="-" />
 
 
                 <h3>Products Active</h3>
-                <label>ABCDE-12345-FGHIJ-67890</label>
+                <table>
+                    <tbody id="userKeysTable">
+                    </tbody>
+
+                </table>
+                <!-- <label>ABCDE-12345-FGHIJ-67890</label>
                 <a href="#">Unlink</a>
-                <br />
-                <label>ABCDE-12345-FGHIJ-67890</label>
-                <a href="#">Unlink</a>
-                <br />
-                <label>ABCDE-12345-FGHIJ-67890</label>
-                <a href="#">Unlink</a>
-                <br />
-                <label>ABCDE-12345-FGHIJ-67890</label>
-                <a href="#">Unlink</a>
-                <br />
+                <br /> -->
 
                 <h3>Customer Notes</h3>
-                <textarea style="width: 100%; height: 300px" placeholder="Keep information relating to the client (internal use only)"></textarea>
+                <textarea style="width: 100%; height: 300px" id="custNotes" placeholder="Keep information relating to the client (internal use only)"></textarea>
 
             </div>
 
