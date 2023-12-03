@@ -238,6 +238,22 @@ providerPortalRouter.post('/action/setuserinfo', (req, res) => {
     });
 });
 
+providerPortalRouter.post('/action/toggleaccountstatus', (req, res) => {
+    let userId = req.body.userId;
+    let status = req.body.status;
+
+    connection.query('UPDATE Users SET status = ? WHERE user_id = ?',
+        [status, userId],
+        (error, result, fields) => {
+            if (error) throw error;
+            console.log(result);
+    });
+});
+
+
+
+
+
 providerPortalRouter.post('/action/unlinkkey/:key', (req, res) => {
 
     let license_key = req.params.key;
