@@ -248,6 +248,18 @@ providerPortalRouter.post('/action/unlinkkey/:key', (req, res) => {
     });
 });
 
+providerPortalRouter.post('/action/setsoftwareinfo/pause', (req, res) => {
+
+    let softwareId = req.body.softwareId;
+    let status = req.body.status;
+
+    connection.query('UPDATE Software SET status = ? WHERE software_id = ?', [status, softwareId], (error, result, fields) => {
+        if (error) throw error;
+        console.log(result);
+    });
+});
+
+
 
 providerPortalRouter.post('/action/addnewkey', (req, res) => {
     let softwareId = req.body.softwareId;

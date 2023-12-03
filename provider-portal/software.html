@@ -236,7 +236,15 @@
                     document.getElementById("currentAppTitle").innerHTML = ' ' + softwareInfo.name + ' (' + softwareInfo.version_number + ')';
                     document.getElementById("softwareVersionNumber").innerHTML = softwareInfo.version_number;
                     document.getElementById("softwarePrice").value = softwareInfo.price;
-		    document.getElementById("hiddenSoftwareId").value = softwareId;
+		            document.getElementById("hiddenSoftwareId").value = softwareId;
+
+                    if(softwareInfo.status == 'active'){
+                        document.getElementById('pauseAccess').checked = false;
+                    } else{
+                        document.getElementById('pauseAccess').checked = true;
+                    }
+
+
                 });
             fetch('action/getsoftwareinfo/' + softwareId + '/users')
                 .then(response => response.json())
@@ -397,6 +405,32 @@
                 }
             });
         }
+
+
+        function appSetting_pauseLicenses(){
+            let status ="";
+            if(document.getElementById('pauseAccess').checked == true){
+                status = "inactive";
+            } else {
+                status = "active";
+            }
+
+            fetch('action/setsoftwareinfo/pause', {
+                method: "POST",
+                body: JSON.stringify({
+                    softwareId: currentSoftwareId,
+                    status: status
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+
+            alert("This software is now " + status);
+            location.reload();
+        }
+
+
 
 
         function appSetting_updateUser()
@@ -569,7 +603,7 @@
 
                 <h4>Misc. Settings</h4>
 
-                <input type="checkbox" id="pauseAccess" />
+                <input type="checkbox" id="pauseAccess" onclick="appSetting_pauseLicenses()"/>
                 <label for="pauseAccess">Temporarily Block ALL Licenses</label>
 
             </div>
