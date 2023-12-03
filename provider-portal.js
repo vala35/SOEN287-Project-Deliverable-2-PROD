@@ -307,3 +307,44 @@ providerPortalRouter.get(':filename(*)',(req,res) => {
 });
 
 module.exports = providerPortalRouter;
+
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false, 
+    auth: {
+        user: 'oneLicenseDummy@gmail.com',
+        pass: 'ZA!23456b'
+    }
+});
+
+
+providerPortalRouter.post('/action/sendemail', (req, res) => {
+    const { subject, body, softwareId } = req.body;
+
+    connection.query('SELECT email_address FROM software_users_view WHERE software_id = ?',
+        [softwareId],
+        (error, results, fields) => {
+            if (error) throw error
+
+            results.forEach(user => {
+                const mailOptions = {
+                    from: 'oneLicenseDummy@gmail.com',
+                    to: user.email_address,
+                    subject: subject,
+                    text: body
+                };
+
+                transporter.sendMail(mailOptions, (emailError, info) => {
+                    if (emailError) {
+                        console.log('Error occurred in sending mail:', emailError);
+                    } else {
+                        console.log('Email sent:', info.response);
+                    }
+                });
+            });
+
+            res.send('Emails sent successfully');
+        });
+});
