@@ -350,4 +350,73 @@ providerPortalRouter.post('/action/sendemail', (req, res) => {
 });
 
 
+providerPortalRouter.get('/action/searchusers/:softwareId', (req, res) => {
+    const softwareId = req.params.softwareId;
+    const query = req.query.query;
+
+    const searchQuery = 'SELECT * FROM users WHERE softwareId = ? AND (firstName LIKE ? OR lastName LIKE ? OR email_address LIKE ?)';
+    
+    connection.query(searchQuery, [softwareId, `%${query}%`, `%${query}%`, `%${query}%`], (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Server error');
+            return;
+        }
+
+        res.json(results);
+    });
+});
+
+providerPortalRouter.get('/action/searchserialnumbers/:softwareId', (req, res) => {
+    const softwareId = req.params.softwareId;
+    const query = req.query.query;
+
+    const searchQuery = 'SELECT * FROM licensekeys WHERE softwareId = ? AND license_key LIKE ?';
+    
+    connection.query(searchQuery, [softwareId, `%${query}%`], (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Server error');
+            return;
+        }
+
+        res.json(results);
+    });
+});
+
+
+providerPortalRouter.get('/action/searchproviderusers', (req, res) => {
+    const providerId = req.session.userInfo.userId;
+    const query = req.query.query;
+
+    const searchQuery = 'SELECT * FROM provider_users_view WHERE provider_id = ? AND (firstName LIKE ? OR lastName LIKE ? OR email_address LIKE ?)';
+    
+    connection.query(searchQuery, [providerId, `%${query}%`, `%${query}%`, `%${query}%`], (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Server error');
+            return;
+        }
+
+        res.json(results);
+    });
+});
+
+providerPortalRouter.get('/action/getproviderusers', (req, res) => {
+    const providerId = req.session.userInfor.userId;
+
+    const query = 'SELECT * FROM provider_users_view WHERE provider_id = ?';
+    
+    connection.query(query, [providerId], (error, results) => {
+        if (error) {
+            console.error(error);
+            res.status(500).send('Server error');
+            return;
+        }
+
+        res.json(results);
+    });
+});
+
+
 module.exports = providerPortalRouter;
