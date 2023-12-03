@@ -207,6 +207,35 @@ providerPortalRouter.post('/action/setsoftwareinfo/price', (req, res) => {
     });
 });
 
+providerPortalRouter.post('/action/setsoftwareinfo/name', (req, res) => {
+
+    let softwareId = req.body.softwareId;
+    let new_name = req.body.name;
+
+    connection.query('UPDATE Software SET name = ? WHERE software_id = ?', [new_name, softwareId], (error, result, fields) => {
+        if (error) throw error;
+
+        console.log(result);
+
+    });
+});
+
+providerPortalRouter.get('/action/newsoftware', (req, res) => {
+
+    provider_id = req.session.userInfo.userId;
+
+    connection.query('INSERT INTO software (name, status, version_number, icon_url, price, provider_id) VALUES ("Placeholder", "active", "1.0.0", "/img/microsoft_word.png", 0.00, ?)', 
+    [provider_id], (error, result, fields) => {
+        if (error) throw error;
+            res.redirect('/provider-portal/software.html');
+        
+        console.log(result);
+
+    });
+});
+
+
+
 providerPortalRouter.post('/action/setsoftwareinfo/updateuser', (req, res) => {
     let userId = req.body.userId;
     let firstName = req.body.firstName;

@@ -245,6 +245,10 @@
                         document.getElementById('pauseAccess').checked = true;
                     }
 
+                    if(softwareInfo.name =="Placeholder"){
+                        alert("You have recently added this software to your account. Please change the default name and price.");
+                    }
+
 
                 });
             fetch('action/getsoftwareinfo/' + softwareId + '/users')
@@ -368,13 +372,6 @@
             location.reload();
         }
 
-
-
-
-
-
-
-
         function serialItem_GoBack() {
             document.getElementById("serialNumberSettings").style.display = "None";
             document.getElementById("serialNumTable").style.display = "block";
@@ -454,6 +451,23 @@
                     "Content-type": "application/json; charset=UTF-8"
                 }
             });
+        }
+
+        function appSetting_setName()
+        {
+            let newName = document.getElementById("softwareNameTitle").value;
+            fetch('action/setsoftwareinfo/name', {
+                method: "POST",
+                body: JSON.stringify({
+                    softwareId: currentSoftwareId,
+                    name: newName
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                }
+            });
+            alert("Your software is now named " + newName +"!");
+            location.reload();
         }
 
 
@@ -598,6 +612,7 @@
     <div id="SoftwareListPage" class="MainContent">
 
         <h2>Software List</h2>
+        <a href="action/newsoftware">Create New</a><br><br>
 
         <table id="SoftwareList" class="SoftwareListTable">
 
@@ -644,10 +659,10 @@
                 <div>
                     <!--<h2 class="AppTitle">Allure</h2>-->
                     <!--<label class="NewAppTitle">Allure</label>-->
-                    <input type="text" class="NewAppTitle" id="softwareNameTitle" value="" onfocus="document.getElementById('editTitleControls').style.display='inline';" onfocusout="document.getElementById('editTitleControls').style.display='none';" />
+                    <input type="text" class="NewAppTitle" id="softwareNameTitle" value="" onfocus="document.getElementById('editTitleControls').style.display='inline';"/>
                     <div style="display:none" id="editTitleControls">
-                        <i class="material-icons done">done</i>
-                        <i class="material-icons cancel">close</i>
+                        <i class="material-icons done" onclick="appSetting_setName()">done</i>
+                        <i class="material-icons cancel" onclick="document.getElementById('editTitleControls').style.display='none';" >close</i>
                     </div>
                     <br />
                     <label id="softwareVersionNumber">0</label>
