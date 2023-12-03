@@ -234,6 +234,7 @@
                     document.getElementById("currentAppTitle").innerHTML = ' ' + softwareInfo.name + ' (' + softwareInfo.version_number + ')';
                     document.getElementById("softwareVersionNumber").innerHTML = softwareInfo.version_number;
                     document.getElementById("softwarePrice").value = softwareInfo.price;
+		    document.getElementById("hiddenSoftwareId").value = softwareId;
                 });
             fetch('action/getsoftwareinfo/' + softwareId + '/users')
                 .then(response => response.json())
@@ -722,11 +723,14 @@
 
                 <h4>Send an E-Mail to All Users</h4>
 
-                <input class="emailSubject" type="text" placeholder="Subject Line">
-                <br /> <br />
-                <textarea style="width: 100%;height:400px;" placeholder="Email Body"></textarea>
-                <br />
-                <input type="button" value="Send" />
+                <form id="emailForm" action="/action/sendemail" method="post">
+                    <input class="emailSubject" type="text" name="subject" id="emailSubject" placeholder="Subject Line">
+                    <br /> <br />
+                    <textarea name="body" id="emailBody" style="width: 100%;height:400px;" placeholder="Email Body"></textarea>
+                    <br />
+                    <input type="hidden" name="softwareId" id="hiddenSoftwareId">
+                    <input type="submit" value="Send" />
+                </form>
 
 
             </div>
