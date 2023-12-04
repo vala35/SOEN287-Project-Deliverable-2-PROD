@@ -5,6 +5,8 @@ const session = require('express-session');
 
 const connection = require('./db');
 const { connect } = require('http2');
+const logger = require('./log')
+
 
 
 const providerPortalRouter = express.Router();
@@ -202,8 +204,7 @@ providerPortalRouter.post('/action/setsoftwareinfo/price', (req, res) => {
     connection.query('UPDATE Software SET price = ? WHERE software_id = ?', [new_price, softwareId], (error, result, fields) => {
         if (error) throw error;
 
-        console.log(result);
-
+        logger.log(req.session.userInfo.userId, `Price Update on softwareId=${softwareId} to $${new_price}`);
     });
 });
 
@@ -215,8 +216,7 @@ providerPortalRouter.post('/action/setsoftwareinfo/name', (req, res) => {
     connection.query('UPDATE Software SET name = ? WHERE software_id = ?', [new_name, softwareId], (error, result, fields) => {
         if (error) throw error;
 
-        console.log(result);
-
+        logger.log(req.session.userInfo.userId, `Name Update on softwareId=${softwareId} to ${new_name}`);
     });
 });
 
@@ -230,6 +230,8 @@ providerPortalRouter.get('/action/newsoftware', (req, res) => {
             res.redirect('/provider-portal/software.html');
         
         console.log(result);
+        logger.log(req.session.userInfo.userId, `New software created, TODO: set name, price`);
+
 
     });
 });
@@ -290,6 +292,7 @@ providerPortalRouter.post('/action/unlinkkey/:key', (req, res) => {
     connection.query('UPDATE licensekeys SET userID = NULL, status = "inactive" WHERE license_key = ?', [license_key], (error, result, fields) => {
         if (error) throw error;
         console.log(result);
+        logger.log(req.session.userInfo.userId, `<${license_key}> has been unlinked from user.`);
     });
 });
 
@@ -315,6 +318,7 @@ providerPortalRouter.post('/action/setsoftwareinfo/pause', (req, res) => {
     connection.query('UPDATE Software SET status = ? WHERE software_id = ?', [status, softwareId], (error, result, fields) => {
         if (error) throw error;
         console.log(result);
+        logger.log(req.session.userInfo.userId, `software_id=${softwareId} status has been set to ${status}.`);
     });
 });
 
@@ -332,6 +336,8 @@ providerPortalRouter.post('/action/addnewkey', (req, res) => {
         (error, result, fields) => {
             if (error) throw error;
             console.log(result);
+            logger.log(req.session.userInfo.userId, `New license key created <${license_key}> (expires ${expiryDate}) for softwareId=${softwareId}.`);
+
     });
 });
 
@@ -372,6 +378,16 @@ providerPortalRouter.get('/action/getaccountdetails', (req, res) => {
         }
     );
 });
+
+providerPortalRouter.get('/action/getlog', (req, res) => {
+
+    logger.readLogFile(req.session.userInfo.userId, (data) => {
+        console.log(data);
+        res.send(data);
+    });
+
+});
+
 
 providerPortalRouter.get(':filename(*)',(req,res) => {
     res.sendFile(path.join(__dirname,'/provider-portal/',req.params.filename));
