@@ -2,8 +2,14 @@ const fs = require('fs');
 
 var readLogFile = (provider_id, s) => {
     fs.readFile(`log_${provider_id}.txt`, (err, data) => {
-        if (err) throw err;
-        s(data);
+        if (err) {
+            if (err.code === 'ENOENT') {
+                console.log('File not found!');
+                s("No logs yet :)");
+            }
+            else throw err;
+        }
+        else s(data);
     });
 };
 
